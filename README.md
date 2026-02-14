@@ -22,7 +22,7 @@ O projeto foi desenvolvido em Java puro, sem uso de qualquer framework, e roda v
 
 
 - **Visualizar lista de tarefas**:
-     - Tem opções para visualizar a lista ordenada por Status, Categoria e Prioridade, sendo a ordenação por Prioridade a padrão
+    - Tem opções para visualizar a lista ordenada por Status, Categoria e Prioridade, sendo a ordenação por Prioridade a padrão
 
 
 - **Remover Tarefa**: Exclusão via ID.
