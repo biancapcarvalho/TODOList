@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
-public class Task {
+public class Task implements Cloneable{
     // atributos
     private int id;
     private String title;
@@ -136,5 +136,17 @@ public class Task {
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
+    }
+
+    @Override
+    public Task clone() {
+        try {
+            // id e priority são primitivos -> copia o valor
+            // String e LocalDate não são primitivos, mas são imutáveis -> copia a referência, mas um set faz a troca de referência
+            // Status e Category são enums constantes -> troca a referência
+            return (Task) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 }

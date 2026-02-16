@@ -61,6 +61,17 @@ public class TaskService {
         taskList.remove(task);
     }
 
+    public void updateTask(Task task) {
+        Task taskToUpdate = getTask(task.getId());
+        taskToUpdate.setTitle(task.getTitle());
+        taskToUpdate.setDescription(task.getDescription());
+        taskToUpdate.setDueDate(task.getDueDate());
+        taskToUpdate.setPriority(task.getPriority());
+        taskToUpdate.setStatus(task.getStatus());
+        taskToUpdate.setCategory(task.getCategory());
+        taskList.sort(Comparator.comparing(Task::getPriority));
+    }
+
     private int generateId() {
         int id = lastId + 1;
         lastId = id;
@@ -81,7 +92,7 @@ public class TaskService {
 
     public ArrayList<Task> getOrderedTaskListByCategory() {
         ArrayList<Task> orderedList = new ArrayList<>(taskList);
-        orderedList.sort(Comparator.comparing(Task::getCategory));
+        orderedList.sort(Comparator.comparing(Task::getCategory, Comparator.nullsLast(Comparator.naturalOrder())));
         return orderedList;
     }
 
