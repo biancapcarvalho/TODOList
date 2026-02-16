@@ -1,8 +1,13 @@
 # TODO List - Gerenciador de Tarefas em Java
-Repositório destinado ao ZG Hero Project da Trilha de Java
+_**Desenvolvido por Bianca Carvalho**_
 
-O projeto foi desenvolvido em Java puro, sem uso de qualquer framework, e roda via terminal (feito somente o backend).
+---
 
+---
+
+## Sobre o projeto
+
+O projeto foi desenvolvido em Java puro, sem uso de qualquer framework, e, na versão atual, roda via terminal (feito somente o backend)
 
 ## Funcionalidades
 
@@ -25,10 +30,13 @@ O projeto foi desenvolvido em Java puro, sem uso de qualquer framework, e roda v
     - Tem opções para visualizar a lista ordenada por Status, Categoria e Prioridade, sendo a ordenação por Prioridade a padrão
 
 
-- **Remover Tarefa**: Exclusão via ID.
+- **Atualizar tarefa**: Permite a edição de tarefas (utiliza ID e shallow copy)
 
 
-- **Validação de Dados**: Tratamento de exceções para entradas inválidas, e uso de números para facilitar a identificação e seleção de uma opção pelo usuário
+- **Remover Tarefa**: Permite a exclusão de tarefas (utiliza ID)
+
+
+- **Validação de Dados**: Tratamento de exceções para entradas inválidas (fora do TaskService, que é responsável somente pela lógica de manipulação das tarefas), e uso de números para facilitar a identificação e seleção de uma opção pelo usuário
 
 ## Mais informações
 
@@ -39,3 +47,14 @@ O projeto foi desenvolvido em Java puro, sem uso de qualquer framework, e roda v
     - Package `Service`: destinado a lógica de manipulação das tarefas e lista de tarefas
     - `View/Menu`: destinado a interação com o usuário
     - `Main`: ponto de entrada da aplicação
+
+---
+
+## TODO (planos para o futuro)
+
+- Implementar CRUD completo (falta o update)
+- Exibir contagem de tarefas (total, por categoria, status e prioridade)
+- Filtrar as tarefas por data de término
+- Persistir os dados (csv, json, ect)
+
+E em futuro mais distante mas não tão distante, utilizar banco de dados (postgre) e implementar frontend

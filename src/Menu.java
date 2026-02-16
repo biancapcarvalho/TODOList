@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class Menu {
@@ -23,13 +24,14 @@ public class Menu {
                 System.out.println("\n######## MENU ########\n");
                 System.out.println("1 - Ver tarefas");
                 System.out.println("2 - Criar tarefa");
-                System.out.println("3 - Remover tarefa");
-                System.out.println("4 - Sair");
+                System.out.println("3 - Editar tarefa");
+                System.out.println("4 - Remover tarefa");
+                System.out.println("5 - Sair");
                 System.out.print("\n## Digite o número da opção: ");
                 try {
                     option = Integer.parseInt(scanner.nextLine());
 
-                    if (option > 4 || option <= 0) {
+                    if (option > 5 || option <= 0) {
                         System.out.println("\n   -- ATENÇÃO: Opção inválida. Para selecionar uma opção do menu você deve inserir o número correspondente a essa opção.");
                     } else {
                         invalidOption = false;
@@ -47,9 +49,12 @@ public class Menu {
                     handleCreateTask();
                     break;
                 case 3:
-                    handleDeleteTask();
+                    handleUpdateTask();
                     break;
                 case 4:
+                    handleDeleteTask();
+                    break;
+                case 5:
                     System.out.println("\nAté mais");
                     break;
                 default:
@@ -109,7 +114,91 @@ public class Menu {
         handleReadTasks(1);
     }
 
+    public void handleUpdateTask() {
+        int id = getIdInput();
+
+        if (taskService.findIfExists(id)) {
+            Task originalTask = taskService.getTask(id);
+            Task taskClone = originalTask.clone();
+            int option = 0;
+
+            do {
+                boolean invalidOption = true;
+
+                while (invalidOption) {
+                    System.out.println("\n############ ATUALIZAR TAREFA ############");
+
+                    System.out.println("\nOrientações para edição:\n - para manter o valor atual do atributo tecle Enter,\n - para alterar digite o novo valor,\n para remover insira '-' e tecle Enter [válido para campos opcionais]\n");
+                    System.out.println("Dados atuais da tarefa: " + taskClone);
+
+                    System.out.println("\nInforme qual campo você deseja alterar\n");
+                    System.out.println("1 - Título");
+                    System.out.println("2 - Descrição");
+                    System.out.println("3 - Data de término");
+                    System.out.println("4 - Prioridade");
+                    System.out.println("5 - Status");
+                    System.out.println("6 - Categoria");
+                    System.out.println("7 - Salvar e sair");
+                    System.out.println("8 - Sair sem salvar");
+                    System.out.print("\n## Digite o número da opção: ");
+
+                    try {
+                        option = Integer.parseInt(scanner.nextLine());
+
+                        if (option > 8 || option <= 0) {
+                            System.out.println("\n   -- ATENÇÃO: Opção inválida. Para selecionar uma opção do menu você deve inserir o número correspondente a essa opção.");
+                        } else {
+                            invalidOption = false;
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println("\n   -- ATENÇÃO: Opção inválida. Para selecionar uma opção do menu você deve inserir o número correspondente a essa opção.");
+                    }
+                }
+
+                switch (option) {
+                    case 1:
+                        String title = getUpdatedTitleInput(taskClone.getTitle());
+                        taskClone.setTitle(title);
+                        break;
+                    case 2:
+                        String description = getUpdatedDescriptionInput(taskClone.getDescription());
+                        taskClone.setDescription(description);
+                        break;
+                    case 3:
+                        LocalDate dueDate = getUpdatedDueDateInput(taskClone.getDueDate());
+                        taskClone.setDueDate(dueDate);
+                        break;
+                    case 4:
+                        int priority = getUpdatedPriorityInput(taskClone.getPriority());
+                        taskClone.setPriority(priority);
+                        break;
+                    case 5:
+                        Status status = getUpdatedStatusInput(taskClone.getStatus());
+                        taskClone.setStatus(status);
+                        break;
+                    case 6:
+                        Category category = getUpdatedCategoryInput(taskClone.getCategory());
+                        taskClone.setCategory(category);
+                        break;
+                    case 7:
+                        //salvar e sair
+                        taskService.updateTask(taskClone);
+                        break;
+                    case 8:
+                        // sair sem salvar
+                        break;
+                }
+            } while (option != 7 && option != 8);
+
+        } else {
+            System.out.println("   -- ATENÇÃO: ID inválido.");
+            // aborta - volta pro menu
+        }
+    }
+
     public void handleDeleteTask() {
+        System.out.println("\n############ REMOVER TAREFA ############");
+
         taskService.deleteTask(getIdInput());
 
         handleReadTasks(1);
@@ -140,6 +229,10 @@ public class Menu {
         return taskId;
     }
 
+    /**
+     * FUNÇÕES AUXILIARES PARA CRIAR TAREFA
+     * getTitleInput, getDescriptionInput, getDueDateInput, getPriorityInput, getStatusInput, getCategoryInput
+     */
     public String getTitleInput() {
         // campo obrigatório
         String title;
@@ -159,6 +252,30 @@ public class Menu {
         System.out.print("\n## Informe a descrição da tarefa: ");
 
         return scanner.nextLine();
+    }
+
+    public LocalDate getDueDateInput() {
+        // campo opcional
+        boolean invalidDate = true;
+        LocalDate dueDate = null;
+
+        while (invalidDate) {
+            System.out.print("\n## Informe a data de término (Formato: DD/MM/AAAA, ex: 13/02/2026): ");
+            try {
+                String stringDueDate = scanner.nextLine();
+
+                if (!stringDueDate.trim().isEmpty()) {
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                    dueDate = LocalDate.parse(stringDueDate, formatter);
+                    invalidDate = false;
+                } else {
+                    invalidDate = false; // se não informou nada, pular
+                }
+            } catch (DateTimeParseException e) {
+                System.out.println("\n   -- ATENÇÃO: Data inválida. Formato aceito: DD/MM/AAAA, ex: 13/02/2026.\n");
+            }
+        }
+        return dueDate;
     }
 
     public int getPriorityInput() {
@@ -261,27 +378,150 @@ public class Menu {
         };
     }
 
-    public LocalDate getDueDateInput() {
-        // campo opcional
+    /**
+     * FUNÇÕES AUXILIARES PARA ATUALIZAR TAREFA
+     * getUpdatedTitleInput, getUpdatedDescriptionInput, getUpdatedDueDateInput, getUpdatedPriorityInput, getUpdatedStatusInput, getUpdatedCategoryInput
+     */
+    public String getUpdatedTitleInput(String title) {
+        System.out.print("\n - Informe o novo título: ");
+        String textInput = scanner.nextLine();
+
+        if (textInput.trim().isEmpty()) {
+            return title;
+        }
+
+        return textInput.trim();
+    }
+
+    public String getUpdatedDescriptionInput(String description) {
+        System.out.print("\n - Informe a nova descrição: ");
+        String textInput = scanner.nextLine();
+
+        if (textInput.trim().isEmpty()) {
+            return description;
+        } else if (textInput.equals("-")) {
+            return "";
+        } else {
+            return textInput.trim();
+        }
+    }
+
+    public LocalDate getUpdatedDueDateInput(LocalDate dueDate) {
         boolean invalidDate = true;
-        LocalDate dueDate = null;
-
+        LocalDate newDueDate = dueDate;
         while (invalidDate) {
-            System.out.print("\n## Informe a data de término (Formato: DD/MM/AAAA, ex: 13/02/2026): ");
-            try {
-                String stringDueDate = scanner.nextLine();
+            System.out.print("\n - Informe a nova data de término: ");
+            String textInput = scanner.nextLine();
 
-                if (!stringDueDate.trim().isEmpty()) {
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-                    dueDate = LocalDate.parse(stringDueDate, formatter);
-                    invalidDate = false;
+            try {
+                if (textInput.trim().isEmpty()) {
+                    return dueDate;
+                } else if (textInput.trim().equals("-")) {
+                    return null;
                 } else {
-                    invalidDate = false; // se não informou nada, pular
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                    newDueDate = LocalDate.parse(textInput, formatter);
+                    invalidDate = false;
                 }
             } catch (DateTimeParseException e) {
                 System.out.println("\n   -- ATENÇÃO: Data inválida. Formato aceito: DD/MM/AAAA, ex: 13/02/2026.\n");
             }
         }
-        return dueDate;
+
+        return newDueDate;
+    }
+
+    public int getUpdatedPriorityInput(int priority) {
+        int newPriority = 0;
+        boolean invalidPriority = true;
+
+        while (invalidPriority) {
+            System.out.print("\n## - Informe a nova prioridade [1 a 5]: ");
+            String input = scanner.nextLine();
+
+            if (input.isEmpty() || input.trim().isEmpty()) {
+                return priority;
+            } else {
+                try {
+                    newPriority = Integer.parseInt(input);
+                    if (newPriority > 5 || newPriority < 1) {
+                        System.out.println("\n   -- ATENÇÃO: Prioridade inválida. Valores aceitos: 1, 2, 3, 4, 5.\n");
+                    } else {
+                        invalidPriority = false;
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("\n   -- ATENÇÃO: Prioridade inválida. Valores aceitos: 1, 2, 3, 4, 5.\n");
+                }
+            }
+        }
+
+        return newPriority;
+    }
+
+    public Status getUpdatedStatusInput(Status status) {
+        int newStatus = 0;
+        boolean invalidStatus = true;
+
+        while (invalidStatus) {
+            System.out.print("\n - Informe o novo status [1. Pendente, 2. Em progresso, 3. Concluído]: ");
+            String input = scanner.nextLine();
+
+            if (input.isEmpty() || input.trim().isEmpty()) {
+                return status;
+            } else {
+                try {
+                    newStatus = Integer.parseInt(input);
+                    if (newStatus > 3 || newStatus < 1) {
+                        System.out.println("\n   -- ATENÇÃO: Opção inválida. Para selecionar uma opção você deve inserir o número correspondente a essa opção.");
+                    } else {
+                        invalidStatus = false;
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("\n   -- ATENÇÃO: Opção inválida. Para selecionar uma opção você deve inserir o número correspondente a essa opção.");
+                }
+            }
+        }
+
+        return switch (newStatus) {
+            case 1 -> Status.TODO;
+            case 2 -> Status.DOING;
+            case 3 -> Status.DONE;
+            default -> status;
+        };
+    }
+
+    public Category getUpdatedCategoryInput(Category category) {
+        int newCategory = 0;
+        boolean invalidCategory = true;
+
+        while (invalidCategory) {
+            System.out.print("\n - Informe a nova categoria [1. Casa, 2. Faculdade, 3. Trabalho]: ");
+            String textInput = scanner.nextLine();
+
+            if (textInput.trim().isEmpty()) {
+                invalidCategory = false;
+                return category;
+            } else if (textInput.equals("-")) {
+                return null;
+            } else {
+                try {
+                    newCategory = Integer.parseInt(textInput);
+                    if (newCategory > 3 || newCategory < 1) {
+                        System.out.println("\n   -- ATENÇÃO: Opção inválida. Para selecionar uma opção você deve inserir o número correspondente a essa opção.");
+                    } else {
+                        invalidCategory = false;
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("\n   -- ATENÇÃO: Opção inválida. Para selecionar uma opção você deve inserir o número correspondente a essa opção.");
+                }
+            }
+        }
+
+        return switch (newCategory) {
+            case 1 -> Category.CASA;
+            case 2 -> Category.FACULDADE;
+            case 3 -> Category.TRABALHO;
+            default -> category;
+        };
     }
 }
