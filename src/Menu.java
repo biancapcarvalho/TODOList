@@ -95,7 +95,7 @@ public class Menu {
                 } else if (orderBy == 2) {
                     // priorityFilterMenu();
                 } else {
-                    // categoryFilterMenu();
+                    categoryFilterMenu();
                 }
             }
         }
@@ -125,6 +125,38 @@ public class Menu {
                     showTasks(taskService.getTaskByStatus(Status.DOING));
                 } else {
                     showTasks(taskService.getTaskByStatus(Status.DONE));
+                }
+            }
+        }
+    }
+
+    private void categoryFilterMenu() {
+        System.out.println("\n### Informe por qual categoria deseja filtrar a lista");
+        System.out.println("1 - Casa");
+        System.out.println("2 - Faculdade");
+        System.out.println("3 - Trabalho");
+        System.out.println("4 - Sem categoria");
+        System.out.println("[Enter para não filtrar lista]");
+        System.out.print("\n## Digite o número da opção: ");
+        String input = scanner.nextLine();
+
+        int category;
+
+        if (input.trim().isEmpty()) {
+            showTasks(taskService.getAllTasks());
+        } else {
+            category = Integer.parseInt(input);
+            if (category > 4 || category < 1) {
+                showTasks(taskService.getAllTasks());
+            } else {
+                if (category == 1) {
+                    showTasks(taskService.getTaskByCategory(Category.CASA));
+                } else if (category == 2) {
+                    showTasks(taskService.getTaskByCategory(Category.FACULDADE));
+                } else if (category == 3) {
+                    showTasks(taskService.getTaskByCategory(Category.TRABALHO));
+                } else {
+                    showTasks(taskService.getTaskByCategory(null));
                 }
             }
         }

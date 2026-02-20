@@ -1,10 +1,12 @@
 package service;
 
+import model.Category;
 import model.Status;
 import model.Task;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class TaskService {
@@ -43,13 +45,18 @@ public class TaskService {
     }
 
     public ArrayList<Task> getAllTasks() {
-        // ordenado pelo ID
         return taskList;
     }
 
     public ArrayList<Task> getTaskByStatus(Status status) {
         return (ArrayList<Task>) taskList.stream()
                 .filter(task -> task.getStatus().equals(status))
+                .collect(Collectors.toList());
+    }
+
+    public ArrayList<Task> getTaskByCategory(Category category) {
+        return (ArrayList<Task>) taskList.stream()
+                .filter(task -> Objects.equals(task.getCategory(), category))
                 .collect(Collectors.toList());
     }
 
@@ -84,12 +91,6 @@ public class TaskService {
         int id = lastId + 1;
         lastId = id;
         return id;
-    }
-
-    public ArrayList<Task> getOrderedTaskListByPriority() {
-        ArrayList<Task> orderedList = new ArrayList<>(taskList);
-        orderedList.sort(Comparator.comparing(Task::getPriority));
-        return orderedList;
     }
 
     public boolean isEmptyList() {

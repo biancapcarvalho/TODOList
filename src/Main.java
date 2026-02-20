@@ -5,7 +5,6 @@ public class Main {
         System.out.println("Desenvolvido por Bianca Carvalho");
         System.out.println("\n--------------------------------------------------------------------------------------------------------\n");
 
-        // exibir menu
         Menu menu = new Menu();
         menu.showMenu();
     }
