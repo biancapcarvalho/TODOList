@@ -6,11 +6,12 @@ import model.Task;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class TaskService {
-    ArrayList<Task> taskList = new ArrayList<>();
+    List<Task> taskList = new ArrayList<>();
     int lastId = 0;
 
     public void createTask(Task task) {
@@ -35,33 +36,30 @@ public class TaskService {
     }
 
     public Task getTask(int id) {
-        for (Task task : taskList) {
-            if (task.getId() == id) {
-                return task;
-            }
-        }
-
-        return null;
+        return taskList.stream()
+                .filter(task -> task.getId() == id)
+                .findFirst()
+                .orElse(null);
     }
 
-    public ArrayList<Task> getAllTasks() {
+    public List<Task> getAllTasks() {
         return taskList;
     }
 
-    public ArrayList<Task> getTaskByStatus(Status status) {
-        return (ArrayList<Task>) taskList.stream()
+    public List<Task> getTaskByStatus(Status status) {
+        return taskList.stream()
                 .filter(task -> task.getStatus().equals(status))
                 .collect(Collectors.toList());
     }
 
-    public ArrayList<Task> getTaskByPriority(int a, int b) {
-        return (ArrayList<Task>) taskList.stream()
+    public List<Task> getTaskByPriority(int a, int b) {
+        return taskList.stream()
                 .filter(task -> task.getPriority() >= a && task.getPriority() <= b) // b >= p >= a
                 .collect(Collectors.toList());
     }
 
-    public ArrayList<Task> getTaskByCategory(Category category) {
-        return (ArrayList<Task>) taskList.stream()
+    public List<Task> getTaskByCategory(Category category) {
+        return taskList.stream()
                 .filter(task -> Objects.equals(task.getCategory(), category))
                 .collect(Collectors.toList());
     }

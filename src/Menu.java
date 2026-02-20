@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Menu {
@@ -55,11 +56,11 @@ public class Menu {
                     break;
                 case 5:
                     System.out.println("\nAté mais");
-                    return;
+                    break;
                 default:
                     // já tratei os demais casos no try-catch
             }
-        } while (option != 4);
+        } while (option != 5);
     }
 
     public void handleReadTasks(int orderBy) {
@@ -227,7 +228,7 @@ public class Menu {
         }
     }
 
-    public void showTasks(ArrayList<Task> taskList) {
+    public void showTasks(List<Task> taskList) {
         if (taskList.isEmpty()) {
             System.out.println("\n   -- Sem tarefas");
         } else {
