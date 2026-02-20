@@ -1,9 +1,11 @@
 package service;
 
+import model.Status;
 import model.Task;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.stream.Collectors;
 
 public class TaskService {
     ArrayList<Task> taskList = new ArrayList<>();
@@ -45,6 +47,12 @@ public class TaskService {
         return taskList;
     }
 
+    public ArrayList<Task> getTaskByStatus(Status status) {
+        return (ArrayList<Task>) taskList.stream()
+                .filter(task -> task.getStatus().equals(status))
+                .collect(Collectors.toList());
+    }
+
     public boolean findIfExists(int id) {
         for (Task task : taskList) {
             int taskId = task.getId();
@@ -78,21 +86,9 @@ public class TaskService {
         return id;
     }
 
-    public ArrayList<Task> getOrderedTaskListByStatus() {
-        ArrayList<Task> orderedList = new ArrayList<>(taskList);
-        orderedList.sort(Comparator.comparing(Task::getStatus));
-        return orderedList;
-    }
-
     public ArrayList<Task> getOrderedTaskListByPriority() {
         ArrayList<Task> orderedList = new ArrayList<>(taskList);
         orderedList.sort(Comparator.comparing(Task::getPriority));
-        return orderedList;
-    }
-
-    public ArrayList<Task> getOrderedTaskListByCategory() {
-        ArrayList<Task> orderedList = new ArrayList<>(taskList);
-        orderedList.sort(Comparator.comparing(Task::getCategory, Comparator.nullsLast(Comparator.naturalOrder())));
         return orderedList;
     }
 
