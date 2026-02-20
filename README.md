@@ -15,19 +15,19 @@ O projeto foi desenvolvido em Java puro, sem uso de qualquer framework, e, na ve
 
 
 - **Criar Tarefa**: Permite cadastrar tarefas com:
-    - Título*
-    - Descrição
-    - Data de Término
-    - Prioridade (1 a 5)*
-    - Categoria (Casa, Faculdade, Trabalho)
-    - Status (Todo, Doing, Done)*
+  - Título*
+  - Descrição
+  - Data de Término
+  - Prioridade (1 a 5)*
+  - Categoria (Casa, Faculdade, Trabalho)
+  - Status (Todo, Doing, Done)*
 
 
 - **Balanceamento**: Novas tarefas são adicionadas a lista respeitando a ordenação por prioridade
 
 
 - **Visualizar lista de tarefas**:
-    - Tem opções para visualizar a lista ordenada por Status, Categoria e Prioridade, sendo a ordenação por Prioridade a padrão
+  - Tem opções para visualizar a lista ordenada por Status, Categoria e Prioridade, sendo a ordenação por Prioridade a padrão
 
 
 - **Atualizar tarefa**: Permite a edição de tarefas (utiliza ID e shallow copy)
@@ -43,16 +43,47 @@ O projeto foi desenvolvido em Java puro, sem uso de qualquer framework, e, na ve
 - Java JDK 17.0.18
 - Segue o padrão Git Flow para organização do desenvolvimento do projeto
 - Estrutura do projeto:
-    - Package `Model`: destinado a definição das entidades, como Task e Status
-    - Package `Service`: destinado a lógica de manipulação das tarefas e lista de tarefas
-    - `View/Menu`: destinado a interação com o usuário
-    - `Main`: ponto de entrada da aplicação
+  - Package `Model`: destinado a definição das entidades, como Task e Status
+  - Package `Service`: destinado a lógica de manipulação das tarefas e lista de tarefas
+  - `View/Menu`: destinado a interação com o usuário
+  - `Main`: ponto de entrada da aplicação
+
+## Como executar
+
+O projeto foi desenvolvido utilizando o Java JDK 17.0.18 na IDE IntelliJ.
+
+Antes tudo é necessário clonar o repositório git:
+```bash
+git clone https://github.com/biancapcarvalho/TODOList.git
+```
+
+### Executar via IntelliJ
+Inicie/abra o projeto no IntelliJ, vá no arquivo src/Main.java e execute o programa (shift+f10)
+
+### Executar via terminal
+Vá até o diretório `src` dentro do repositório clonado
+```bash
+cd TODOList/src
+```
+
+Compile o arquivo de entrada da aplicação (Main.java)
+```bash
+javac Main.java
+```
+
+Execute a aplicação
+```bash
+java Main
+```
+
+Após isso será exibido no terminal o menu principal daa aplicação, como mostra a tela abaixo.
+
+![Execução da aplicação via termminal](terminal.png)
 
 ---
 
 ## TODO (planos para o futuro)
 
-- Implementar CRUD completo (falta o update)
 - Exibir contagem de tarefas (total, por categoria, status e prioridade)
 - Filtrar as tarefas por data de término
 - Persistir os dados (csv, json, ect)
