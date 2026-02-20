@@ -27,7 +27,8 @@ O projeto foi desenvolvido em Java puro, sem uso de qualquer framework, e, na ve
 
 
 - **Visualizar lista de tarefas**:
-  - Tem opções para visualizar a lista ordenada por Status, Categoria e Prioridade, sendo a ordenação por Prioridade a padrão
+  - Tem opções para visualizar a lista filtrada por Status, Categoria e Prioridade
+  - A lista é ordenada por prioridade
 
 
 - **Atualizar tarefa**: Permite a edição de tarefas (utiliza ID e shallow copy)

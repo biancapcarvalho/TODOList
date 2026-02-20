@@ -6,7 +6,6 @@ import service.TaskService;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -251,93 +250,101 @@ public class Menu {
     }
 
     public void handleUpdateTask() {
-        int id = getIdInput();
-
-        if (taskService.findIfExists(id)) {
-            Task originalTask = taskService.getTask(id);
-            Task taskClone = originalTask.clone();
-            int option = 0;
-
-            do {
-                boolean invalidOption = true;
-
-                while (invalidOption) {
-                    System.out.println("\n############ ATUALIZAR TAREFA ############");
-
-                    System.out.println("\nOrientações para edição:\n - para manter o valor atual do atributo tecle Enter,\n - para alterar digite o novo valor,\n para remover insira '-' e tecle Enter [válido para campos opcionais]\n");
-                    System.out.println("Dados atuais da tarefa: " + taskClone);
-
-                    System.out.println("\nInforme qual campo você deseja alterar\n");
-                    System.out.println("1 - Título");
-                    System.out.println("2 - Descrição");
-                    System.out.println("3 - Data de término");
-                    System.out.println("4 - Prioridade");
-                    System.out.println("5 - Status");
-                    System.out.println("6 - Categoria");
-                    System.out.println("7 - Salvar e sair");
-                    System.out.println("8 - Sair sem salvar");
-                    System.out.print("\n## Digite o número da opção: ");
-
-                    try {
-                        option = Integer.parseInt(scanner.nextLine());
-
-                        if (option > 8 || option <= 0) {
-                            System.out.println("\n   -- ATENÇÃO: Opção inválida. Para selecionar uma opção do menu você deve inserir o número correspondente a essa opção.");
-                        } else {
-                            invalidOption = false;
-                        }
-                    } catch (NumberFormatException e) {
-                        System.out.println("\n   -- ATENÇÃO: Opção inválida. Para selecionar uma opção do menu você deve inserir o número correspondente a essa opção.");
-                    }
-                }
-
-                switch (option) {
-                    case 1:
-                        String title = getUpdatedTitleInput(taskClone.getTitle());
-                        taskClone.setTitle(title);
-                        break;
-                    case 2:
-                        String description = getUpdatedDescriptionInput(taskClone.getDescription());
-                        taskClone.setDescription(description);
-                        break;
-                    case 3:
-                        LocalDate dueDate = getUpdatedDueDateInput(taskClone.getDueDate());
-                        taskClone.setDueDate(dueDate);
-                        break;
-                    case 4:
-                        int priority = getUpdatedPriorityInput(taskClone.getPriority());
-                        taskClone.setPriority(priority);
-                        break;
-                    case 5:
-                        Status status = getUpdatedStatusInput(taskClone.getStatus());
-                        taskClone.setStatus(status);
-                        break;
-                    case 6:
-                        Category category = getUpdatedCategoryInput(taskClone.getCategory());
-                        taskClone.setCategory(category);
-                        break;
-                    case 7:
-                        //salvar e sair
-                        taskService.updateTask(taskClone);
-                        break;
-                    case 8:
-                        // sair sem salvar
-                        break;
-                }
-            } while (option != 7 && option != 8);
-
+        if (taskService.isEmptyList()) {
+            System.out.println("\n   -- Você não tem tarefas cadastradas.");
         } else {
-            System.out.println("   -- ATENÇÃO: ID inválido.");
-            // aborta - volta pro menu
+            int id = getIdInput();
+
+            if (taskService.findIfExists(id)) {
+                Task originalTask = taskService.getTask(id);
+                Task taskClone = originalTask.clone();
+                int option = 0;
+
+                do {
+                    boolean invalidOption = true;
+
+                    while (invalidOption) {
+                        System.out.println("\n############ ATUALIZAR TAREFA ############");
+
+                        System.out.println("\nOrientações para edição:\n - para manter o valor atual do atributo tecle Enter,\n - para alterar digite o novo valor,\n para remover insira '-' e tecle Enter [válido para campos opcionais]\n");
+                        System.out.println("Dados atuais da tarefa: " + taskClone);
+
+                        System.out.println("\nInforme qual campo você deseja alterar\n");
+                        System.out.println("1 - Título");
+                        System.out.println("2 - Descrição");
+                        System.out.println("3 - Data de término");
+                        System.out.println("4 - Prioridade");
+                        System.out.println("5 - Status");
+                        System.out.println("6 - Categoria");
+                        System.out.println("7 - Salvar e sair");
+                        System.out.println("8 - Sair sem salvar");
+                        System.out.print("\n## Digite o número da opção: ");
+
+                        try {
+                            option = Integer.parseInt(scanner.nextLine());
+
+                            if (option > 8 || option <= 0) {
+                                System.out.println("\n   -- ATENÇÃO: Opção inválida. Para selecionar uma opção do menu você deve inserir o número correspondente a essa opção.");
+                            } else {
+                                invalidOption = false;
+                            }
+                        } catch (NumberFormatException e) {
+                            System.out.println("\n   -- ATENÇÃO: Opção inválida. Para selecionar uma opção do menu você deve inserir o número correspondente a essa opção.");
+                        }
+                    }
+
+                    switch (option) {
+                        case 1:
+                            String title = getUpdatedTitleInput(taskClone.getTitle());
+                            taskClone.setTitle(title);
+                            break;
+                        case 2:
+                            String description = getUpdatedDescriptionInput(taskClone.getDescription());
+                            taskClone.setDescription(description);
+                            break;
+                        case 3:
+                            LocalDate dueDate = getUpdatedDueDateInput(taskClone.getDueDate());
+                            taskClone.setDueDate(dueDate);
+                            break;
+                        case 4:
+                            int priority = getUpdatedPriorityInput(taskClone.getPriority());
+                            taskClone.setPriority(priority);
+                            break;
+                        case 5:
+                            Status status = getUpdatedStatusInput(taskClone.getStatus());
+                            taskClone.setStatus(status);
+                            break;
+                        case 6:
+                            Category category = getUpdatedCategoryInput(taskClone.getCategory());
+                            taskClone.setCategory(category);
+                            break;
+                        case 7:
+                            //salvar e sair
+                            taskService.updateTask(taskClone);
+                            break;
+                        case 8:
+                            // sair sem salvar
+                            break;
+                    }
+                } while (option != 7 && option != 8);
+
+            } else {
+                System.out.println("   -- ATENÇÃO: ID inválido.");
+                // aborta - volta pro menu
+            }
         }
     }
 
     public void handleDeleteTask() {
-        System.out.println("\n############ REMOVER TAREFA ############");
+        if (taskService.isEmptyList()) {
+            System.out.println("\n   -- Você não tem tarefas cadastradas.");
+        } else {
+            System.out.println("\n############ REMOVER TAREFA ############");
 
-        taskService.deleteTask(getIdInput());
+            taskService.deleteTask(getIdInput());
 
-        handleReadTasks(1);
+            handleReadTasks(1);
+        }
     }
 
     private int getIdInput() {
@@ -367,10 +374,8 @@ public class Menu {
 
     /**
      * FUNÇÕES AUXILIARES PARA CRIAR TAREFA
-     * getTitleInput, getDescriptionInput, getDueDateInput, getPriorityInput, getStatusInput, getCategoryInput
      */
     public String getTitleInput() {
-        // campo obrigatório
         String title;
         while (true) {
             System.out.print("\n## Informe o título da tarefa: ");
@@ -384,14 +389,12 @@ public class Menu {
     }
 
     public String getDescriptionInput() {
-        // campo opcional
         System.out.print("\n## Informe a descrição da tarefa: ");
 
         return scanner.nextLine();
     }
 
     public LocalDate getDueDateInput() {
-        // campo opcional
         boolean invalidDate = true;
         LocalDate dueDate = null;
 
@@ -405,7 +408,7 @@ public class Menu {
                     dueDate = LocalDate.parse(stringDueDate, formatter);
                     invalidDate = false;
                 } else {
-                    invalidDate = false; // se não informou nada, pular
+                    invalidDate = false;
                 }
             } catch (DateTimeParseException e) {
                 System.out.println("\n   -- ATENÇÃO: Data inválida. Formato aceito: DD/MM/AAAA, ex: 13/02/2026.\n");
@@ -415,7 +418,6 @@ public class Menu {
     }
 
     public int getPriorityInput() {
-        // campo obrigatório
         int priority = 0;
         boolean invalidPriority = true;
 
@@ -442,7 +444,6 @@ public class Menu {
     }
 
     public Status getStatusInput() {
-        // campo obrigatório
         int status = 0;
         boolean invalidStatus = true;
 
@@ -474,7 +475,6 @@ public class Menu {
     }
 
     public Category getCategoryInput() {
-        // campo opcional
         int category = 0;
         boolean invalidCategory = true;
 
@@ -516,7 +516,6 @@ public class Menu {
 
     /**
      * FUNÇÕES AUXILIARES PARA ATUALIZAR TAREFA
-     * getUpdatedTitleInput, getUpdatedDescriptionInput, getUpdatedDueDateInput, getUpdatedPriorityInput, getUpdatedStatusInput, getUpdatedCategoryInput
      */
     public String getUpdatedTitleInput(String title) {
         System.out.print("\n - Informe o novo título: ");
