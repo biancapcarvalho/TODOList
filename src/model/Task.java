@@ -5,7 +5,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class Task implements Cloneable{
-    // atributos
     private Integer id;
     private String title;
     private String description;
@@ -14,7 +13,6 @@ public class Task implements Cloneable{
     private Status status;
     private Category category;
 
-    // construtor
     public Task(int id, String title, int priority, Status status) {
         this.id = id;
         this.title = title;
@@ -22,7 +20,6 @@ public class Task implements Cloneable{
         this.status = status;
     }
 
-    // métodos
     public int getId() {
         return id;
     }
@@ -81,46 +78,47 @@ public class Task implements Cloneable{
 
     @Override
     public String toString() {
-        String task = "> Tarefa: " +
-                "ID = " + id +
-                ", Título = " + title;
+        StringBuilder task = new StringBuilder();
+        task.append("> Tarefa:");
+        task.append(" ID = ").append(id);
+        task.append(", Título = ").append(title);
 
         if (description == null || description.isEmpty()) {
-            task = task + ", Descrição = --- ";
+            task.append(", Descrição = --- ");
         } else {
-            task = task + ", Descrição = " + description;
+            task.append(", Descrição = ").append(description);
         }
 
         if (dueDate == null) {
-            task = task + ", Data de término = --- ";
+            task.append(", Data de término = --- ");
         } else {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
             String formattedDueDate = dueDate.format(formatter);
-            task = task + ", Data de término = " + formattedDueDate;
+            task.append(", Data de término = ").append(formattedDueDate);
         }
 
-        task = task + ", Prioridade = " + priority;
+        task.append(", Prioridade = ").append(priority);
 
         switch (status) {
             case TODO:
-                task = task + ", Status = A fazer";
+                task.append(", Status = Pendente");
                 break;
             case DOING:
-                task = task + ", Status = Em progresso";
+                task.append(", Status = Em progresso");
                 break;
             case DONE:
-                task = task + ", Status = Concluído";
+                task.append(", Status = Concluído");
                 break;
             default:
                 // inválido
         }
 
         if (category == null) {
-            task = task + ", Categoria = --- ";
+            task.append(", Categoria = --- ");
         } else {
-            task = task + ", Categoria = " + category;
+            task.append(", Categoria = ").append(category);
         }
-        return task;
+        return String.valueOf(task);
     }
 
     @Override
@@ -138,9 +136,6 @@ public class Task implements Cloneable{
     @Override
     public Task clone() {
         try {
-            // id e priority são primitivos -> copia o valor
-            // String e LocalDate não são primitivos, mas são imutáveis -> copia a referência, mas um set faz a troca de referência
-            // Status e Category são enums constantes -> troca a referência
             return (Task) super.clone();
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();

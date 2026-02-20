@@ -1,12 +1,17 @@
 package service;
 
+import model.Category;
+import model.Status;
 import model.Task;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class TaskService {
-    ArrayList<Task> taskList = new ArrayList<>();
+    List<Task> taskList = new ArrayList<>();
     int lastId = 0;
 
     public void createTask(Task task) {
@@ -31,18 +36,32 @@ public class TaskService {
     }
 
     public Task getTask(int id) {
-        for (Task task : taskList) {
-            if (task.getId() == id) {
-                return task;
-            }
-        }
-
-        return null;
+        return taskList.stream()
+                .filter(task -> task.getId() == id)
+                .findFirst()
+                .orElse(null);
     }
 
-    public ArrayList<Task> getAllTasks() {
-        // ordenado pelo ID
+    public List<Task> getAllTasks() {
         return taskList;
+    }
+
+    public List<Task> getTaskByStatus(Status status) {
+        return taskList.stream()
+                .filter(task -> task.getStatus().equals(status))
+                .collect(Collectors.toList());
+    }
+
+    public List<Task> getTaskByPriority(int a, int b) {
+        return taskList.stream()
+                .filter(task -> task.getPriority() >= a && task.getPriority() <= b) // b >= p >= a
+                .collect(Collectors.toList());
+    }
+
+    public List<Task> getTaskByCategory(Category category) {
+        return taskList.stream()
+                .filter(task -> Objects.equals(task.getCategory(), category))
+                .collect(Collectors.toList());
     }
 
     public boolean findIfExists(int id) {
@@ -76,24 +95,6 @@ public class TaskService {
         int id = lastId + 1;
         lastId = id;
         return id;
-    }
-
-    public ArrayList<Task> getOrderedTaskListByStatus() {
-        ArrayList<Task> orderedList = new ArrayList<>(taskList);
-        orderedList.sort(Comparator.comparing(Task::getStatus));
-        return orderedList;
-    }
-
-    public ArrayList<Task> getOrderedTaskListByPriority() {
-        ArrayList<Task> orderedList = new ArrayList<>(taskList);
-        orderedList.sort(Comparator.comparing(Task::getPriority));
-        return orderedList;
-    }
-
-    public ArrayList<Task> getOrderedTaskListByCategory() {
-        ArrayList<Task> orderedList = new ArrayList<>(taskList);
-        orderedList.sort(Comparator.comparing(Task::getCategory, Comparator.nullsLast(Comparator.naturalOrder())));
-        return orderedList;
     }
 
     public boolean isEmptyList() {

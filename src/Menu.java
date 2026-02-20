@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Menu {
@@ -55,52 +56,188 @@ public class Menu {
                     break;
                 case 5:
                     System.out.println("\nAté mais");
-                    return;
+                    break;
                 default:
                     // já tratei os demais casos no try-catch
             }
-        } while (option != 4);
+        } while (option != 5);
     }
 
     public void handleReadTasks(int orderBy) {
         if (taskService.isEmptyList()) {
             System.out.println("\n   -- Você não tem tarefas cadastradas.");
         } else if (orderBy == 0) {
-            System.out.println("\n### Ordenar lista de tarefas por: ###");
-            System.out.println("1 - Status");
-            System.out.println("2 - Prioridade");
-            System.out.println("3 - Categoria");
-            System.out.println("[Enter para não ordenar lista]");
-            System.out.print("\n## Digite o número da opção: ");
-            String input = scanner.nextLine();
-
-            if (input.trim().isEmpty()) {
-                showTasks(taskService.getAllTasks());
-            } else {
-                orderBy = Integer.parseInt(input);
-                if (orderBy > 3 || orderBy < 1) {
-                    showTasks(taskService.getAllTasks());
-                } else {
-                    if (orderBy == 1) {
-                        showTasks(taskService.getOrderedTaskListByStatus());
-                    } else if (orderBy == 2) {
-                        showTasks(taskService.getOrderedTaskListByPriority());
-                    } else {
-                        showTasks(taskService.getOrderedTaskListByCategory());
-                    }
-                }
-            }
+            filterMenu();
         } else {
             showTasks(taskService.getAllTasks());
         }
     }
 
-    public void showTasks(ArrayList<Task> taskList) {
-        System.out.println("\n--LISTA DE TAREFAS--------------------------------------------------------------------------------------\n");
-        for (Task task : taskList) {
-            System.out.println(task);
+    private void filterMenu() {
+        System.out.println("\n### Filtrar lista de tarefas por: ###");
+        System.out.println("1 - Status");
+        System.out.println("2 - Prioridade");
+        System.out.println("3 - Categoria");
+        System.out.println("[Enter para não filtrar lista]");
+        System.out.print("\n## Digite o número da opção: ");
+        String input = scanner.nextLine();
+
+        int orderBy;
+
+        if (input.trim().isEmpty()) {
+            showTasks(taskService.getAllTasks());
+        } else {
+            orderBy = Integer.parseInt(input);
+            if (orderBy > 3 || orderBy < 1) {
+                showTasks(taskService.getAllTasks());
+            } else {
+                if (orderBy == 1) {
+                    statusFilterMenu();
+                } else if (orderBy == 2) {
+                    priorityFilterMenu();
+                } else {
+                    categoryFilterMenu();
+                }
+            }
         }
-        System.out.println("\n--------------------------------------------------------------------------------------------------------\n");
+    }
+
+    private void statusFilterMenu() {
+        System.out.println("\n### Informe por qual status deseja filtrar a lista");
+        System.out.println("1 - Pendente");
+        System.out.println("2 - Em progresso");
+        System.out.println("3 - Concluído");
+        System.out.println("[Enter para não filtrar lista]");
+        System.out.print("\n## Digite o número da opção: ");
+        String input = scanner.nextLine();
+
+        int status;
+
+        if (input.trim().isEmpty()) {
+            showTasks(taskService.getAllTasks());
+        } else {
+            status = Integer.parseInt(input);
+            if (status > 3 || status < 1) {
+                showTasks(taskService.getAllTasks());
+            } else {
+                if (status == 1) {
+                    showTasks(taskService.getTaskByStatus(Status.TODO));
+                } else if (status == 2) {
+                    showTasks(taskService.getTaskByStatus(Status.DOING));
+                } else {
+                    showTasks(taskService.getTaskByStatus(Status.DONE));
+                }
+            }
+        }
+    }
+
+
+    private void priorityFilterMenu() {
+        System.out.println("\n### Informe por qual intervalo de prioridade deseja filtrar a lista");
+        System.out.println("Instruções (considere x e y números entre de 1 a 5):");
+        System.out.println("x: mostra as tarefas de prioridade x");
+        System.out.println("x-y: mostra as tarefas de prioridade x a y");
+        System.out.println(">x: mostra as tarefas de prioridade maior ou igual a x");
+        System.out.println("<x: mostra as tarefas de prioridade menor ou igual a x");
+        System.out.println("[Enter para não filtrar lista]");
+        System.out.print("\n## Digite o intervalo seguindo o padrão das instruções: ");
+        String input = scanner.nextLine();
+
+        if (input.trim().isEmpty()) {
+            showTasks(taskService.getAllTasks());
+        } else {
+            input = input.trim().replaceAll("\\s", "");
+            StringBuilder str = new StringBuilder(input);
+            if (str.indexOf("<") != -1) {
+                int i = str.indexOf("<");
+                str.delete(i, i+1);
+                if (str.length() != 1) {
+                    showTasks(taskService.getAllTasks());
+                } else {
+                    int p = Integer.parseInt(String.valueOf(str));
+                    showTasks(taskService.getTaskByPriority(0,p)); // > 0 && < p
+                }
+            } else if (str.indexOf(">") != -1) {
+                int i = str.indexOf(">");
+                str.delete(i, i+1);
+                if (str.length() != 1) {
+                    showTasks(taskService.getAllTasks());
+                } else {
+                    int p = Integer.parseInt(String.valueOf(str));
+                    showTasks(taskService.getTaskByPriority(p,5)); // > p && < 5
+                }
+            } else if (str.indexOf("-") != -1) {
+                StringBuilder aux = new StringBuilder(str);
+                int i = str.indexOf("-");
+                aux.delete(i, i+1);
+
+                if (aux.length() != 2) {
+                    showTasks(taskService.getAllTasks());
+                } else {
+                    int a = Integer.parseInt(str.substring(0, i));
+                    int b = Integer.parseInt(str.substring(i + 1, str.length()));
+
+                    if (a > b) {
+                        int c = b;
+                        b = a;
+                        a = c;
+                    }
+
+                    showTasks(taskService.getTaskByPriority(a,b));
+                }
+            } else {
+                if (str.length() != 1) {
+                    showTasks(taskService.getAllTasks());
+                } else {
+                    int p = Integer.parseInt(input);
+                    showTasks(taskService.getTaskByPriority(p,p));
+                }
+            }
+        }
+    }
+
+    private void categoryFilterMenu() {
+        System.out.println("\n### Informe por qual categoria deseja filtrar a lista");
+        System.out.println("1 - Casa");
+        System.out.println("2 - Faculdade");
+        System.out.println("3 - Trabalho");
+        System.out.println("4 - Sem categoria");
+        System.out.println("[Enter para não filtrar lista]");
+        System.out.print("\n## Digite o número da opção: ");
+        String input = scanner.nextLine();
+
+        int category;
+
+        if (input.trim().isEmpty()) {
+            showTasks(taskService.getAllTasks());
+        } else {
+            category = Integer.parseInt(input);
+            if (category > 4 || category < 1) {
+                showTasks(taskService.getAllTasks());
+            } else {
+                if (category == 1) {
+                    showTasks(taskService.getTaskByCategory(Category.CASA));
+                } else if (category == 2) {
+                    showTasks(taskService.getTaskByCategory(Category.FACULDADE));
+                } else if (category == 3) {
+                    showTasks(taskService.getTaskByCategory(Category.TRABALHO));
+                } else {
+                    showTasks(taskService.getTaskByCategory(null));
+                }
+            }
+        }
+    }
+
+    public void showTasks(List<Task> taskList) {
+        if (taskList.isEmpty()) {
+            System.out.println("\n   -- Sem tarefas");
+        } else {
+            System.out.println("\n--LISTA DE TAREFAS--------------------------------------------------------------------------------------\n");
+            for (Task task : taskList) {
+                System.out.println(task);
+            }
+            System.out.println("\n--------------------------------------------------------------------------------------------------------\n");
+        }
     }
 
     public void handleCreateTask() {
