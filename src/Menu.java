@@ -7,7 +7,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.Objects;
 import java.util.Scanner;
 
 public class Menu {
@@ -56,7 +55,7 @@ public class Menu {
                     break;
                 case 5:
                     System.out.println("\nAté mais");
-                    break;
+                    return;
                 default:
                     // já tratei os demais casos no try-catch
             }
@@ -499,7 +498,6 @@ public class Menu {
             String textInput = scanner.nextLine();
 
             if (textInput.trim().isEmpty()) {
-                invalidCategory = false;
                 return category;
             } else if (textInput.equals("-")) {
                 return null;

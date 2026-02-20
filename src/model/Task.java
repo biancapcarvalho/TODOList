@@ -6,7 +6,7 @@ import java.util.Objects;
 
 public class Task implements Cloneable{
     // atributos
-    private int id;
+    private Integer id;
     private String title;
     private String description;
     private LocalDate dueDate;
@@ -120,9 +120,6 @@ public class Task implements Cloneable{
         } else {
             task = task + ", Categoria = " + category;
         }
-
-        task = task + " }";
-
         return task;
     }
 
@@ -130,7 +127,7 @@ public class Task implements Cloneable{
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
-        return id == task.id;
+        return Objects.equals(id, task.id);
     }
 
     @Override
