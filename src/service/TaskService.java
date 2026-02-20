@@ -54,6 +54,12 @@ public class TaskService {
                 .collect(Collectors.toList());
     }
 
+    public ArrayList<Task> getTaskByPriority(int a, int b) {
+        return (ArrayList<Task>) taskList.stream()
+                .filter(task -> task.getPriority() >= a && task.getPriority() <= b) // b >= p >= a
+                .collect(Collectors.toList());
+    }
+
     public ArrayList<Task> getTaskByCategory(Category category) {
         return (ArrayList<Task>) taskList.stream()
                 .filter(task -> Objects.equals(task.getCategory(), category))

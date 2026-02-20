@@ -93,7 +93,7 @@ public class Menu {
                 if (orderBy == 1) {
                     statusFilterMenu();
                 } else if (orderBy == 2) {
-                    // priorityFilterMenu();
+                    priorityFilterMenu();
                 } else {
                     categoryFilterMenu();
                 }
@@ -125,6 +125,71 @@ public class Menu {
                     showTasks(taskService.getTaskByStatus(Status.DOING));
                 } else {
                     showTasks(taskService.getTaskByStatus(Status.DONE));
+                }
+            }
+        }
+    }
+
+
+    private void priorityFilterMenu() {
+        System.out.println("\n### Informe por qual intervalo de prioridade deseja filtrar a lista");
+        System.out.println("Instruções (considere x e y números entre de 1 a 5):");
+        System.out.println("x: mostra as tarefas de prioridade x");
+        System.out.println("x-y: mostra as tarefas de prioridade x a y");
+        System.out.println(">x: mostra as tarefas de prioridade maior ou igual a x");
+        System.out.println("<x: mostra as tarefas de prioridade menor ou igual a x");
+        System.out.println("[Enter para não filtrar lista]");
+        System.out.print("\n## Digite o intervalo seguindo o padrão das instruções: ");
+        String input = scanner.nextLine();
+
+        if (input.trim().isEmpty()) {
+            showTasks(taskService.getAllTasks());
+        } else {
+            input = input.trim().replaceAll("\\s", "");
+            StringBuilder str = new StringBuilder(input);
+            if (str.indexOf("<") != -1) {
+                int i = str.indexOf("<");
+                str.delete(i, i+1);
+                if (str.length() != 1) {
+                    showTasks(taskService.getAllTasks());
+                } else {
+                    int p = Integer.parseInt(String.valueOf(str));
+                    showTasks(taskService.getTaskByPriority(0,p)); // > 0 && < p
+                }
+            } else if (str.indexOf(">") != -1) {
+                int i = str.indexOf(">");
+                str.delete(i, i+1);
+                if (str.length() != 1) {
+                    showTasks(taskService.getAllTasks());
+                } else {
+                    int p = Integer.parseInt(String.valueOf(str));
+                    showTasks(taskService.getTaskByPriority(p,5)); // > p && < 5
+                }
+            } else if (str.indexOf("-") != -1) {
+                StringBuilder aux = new StringBuilder(str);
+                int i = str.indexOf("-");
+                aux.delete(i, i+1);
+
+                if (aux.length() != 2) {
+                    showTasks(taskService.getAllTasks());
+                } else {
+                    int a = Integer.parseInt(str.substring(0, i));
+                    int b = Integer.parseInt(str.substring(i + 1, str.length()));
+
+                    if (a > b) {
+                        int c = b;
+                        b = a;
+                        a = c;
+                    }
+
+                    showTasks(taskService.getTaskByPriority(a,b));
+                }
+            } else {
+                if (str.length() != 1) {
+                    showTasks(taskService.getAllTasks());
+                } else {
+                    int p = Integer.parseInt(input);
+                    showTasks(taskService.getTaskByPriority(p,p));
                 }
             }
         }
