@@ -3,37 +3,22 @@ package service;
 import model.Category;
 import model.Status;
 import model.Task;
+import repository.TaskRepository;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class TaskService {
-    List<Task> taskList = new ArrayList<>();
-    int lastId = 0;
+    private final TaskRepository repository;
 
-    // criar tarefa somente com os campos obrigatórios (criado a partir do teste)
-    public Task createTask(String title, int priority, Status status) {
-        validadeDataTask(title, priority, status);
-
-        int id = generateId();
-
-        Task newTask = new Task(id, title, priority, status);
-        taskList.add(newTask);
-        taskList.sort(Comparator.comparing(Task::getPriority));
-        return newTask;
+    public TaskService(TaskRepository repository) {
+        this.repository = repository;
     }
 
-    // criar tarefa com todos os campos (criado a partir do teste)
     public Task createTask(String title, int priority, Status status, String description, LocalDate dueDate, Category category) {
-        validadeDataTask(title, priority, status);
+        validateDataTask(title, priority, status);
 
-        int id = generateId();
-
-        Task newTask = new Task(id, title, priority, status);
+        Task newTask = new Task(title, priority, status);
 
         if (description != null) {
             newTask.setDescription(description);
@@ -47,89 +32,74 @@ public class TaskService {
             newTask.setCategory(category);
         }
 
-        taskList.add(newTask);
-        taskList.sort(Comparator.comparing(Task::getPriority));
+        repository.add(newTask);
 
         return newTask;
     }
 
-    public void validadeDataTask(String title, int priority, Status status) {
+    public void validateDataTask(String title, int priority, Status status) {
         if (title == null || title.trim().isEmpty()) {
-            throw new IllegalArgumentException("ERRO: título inválido");
+            throw new IllegalArgumentException("ERRO: Título inválido!");
         }
 
         if (priority < 1 || priority > 5) {
-            throw new IllegalArgumentException("ERRO: prioridade inválida");
+            throw new IllegalArgumentException("ERRO: Prioridade inválida!");
         }
 
         if (status == null) {
-            throw new IllegalArgumentException("ERRO: status inválido");
+            throw new IllegalArgumentException("ERRO: Status inválido!");
         }
-    }
-
-    public Task getTask(int id) {
-        return taskList.stream()
-                .filter(task -> task.getId() == id)
-                .findFirst()
-                .orElse(null);
-    }
-
-    public List<Task> getAllTasks() {
-        return taskList;
-    }
-
-    public List<Task> getTaskByStatus(Status status) {
-        return taskList.stream()
-                .filter(task -> task.getStatus().equals(status))
-                .collect(Collectors.toList());
-    }
-
-    public List<Task> getTaskByPriority(int a, int b) {
-        return taskList.stream()
-                .filter(task -> task.getPriority() >= a && task.getPriority() <= b) // b >= p >= a
-                .collect(Collectors.toList());
-    }
-
-    public List<Task> getTaskByCategory(Category category) {
-        return taskList.stream()
-                .filter(task -> Objects.equals(task.getCategory(), category))
-                .collect(Collectors.toList());
-    }
-
-    public boolean findIfExists(int id) {
-        for (Task task : taskList) {
-            int taskId = task.getId();
-            if (taskId == id) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     public void deleteTask(int taskId) {
-        Task task = getTask(taskId);
-        taskList.remove(task);
-    }
-
-    public void updateTask(Task task) {
-        Task taskToUpdate = getTask(task.getId());
-        taskToUpdate.setTitle(task.getTitle());
-        taskToUpdate.setDescription(task.getDescription());
-        taskToUpdate.setDueDate(task.getDueDate());
-        taskToUpdate.setPriority(task.getPriority());
-        taskToUpdate.setStatus(task.getStatus());
-        taskToUpdate.setCategory(task.getCategory());
-        taskList.sort(Comparator.comparing(Task::getPriority));
-    }
-
-    private int generateId() {
-        int id = lastId + 1;
-        lastId = id;
-        return id;
+        repository.remove(taskId);
     }
 
     public boolean isEmptyList() {
-        return taskList.isEmpty();
+        return repository.isEmpty();
+    }
+
+    public List<Task> getAllTasks() {
+        return repository.getAllTasks();
+    }
+
+
+    public List<Task> getTaskByStatus(Status status) {
+        return repository.getTaskByStatus(status);
+    }
+
+    public List<Task> getTaskByPriority(int priorityMin, int priorityMax) {
+        return repository.getTaskByPriority(priorityMin, priorityMax);
+    }
+
+    public List<Task> getTaskByCategory(Category category) {
+        return repository.getTaskByCategory(category);
+    }
+
+    public void updateTask(Task newTaskData) {
+        Task originalTask = repository.findById(newTaskData.getId());
+
+        if (originalTask == null) {
+            throw new IllegalArgumentException("ERRO: Tarefa de ID " + newTaskData.getId() + " não encontrada");
+        }
+
+        validateDataTask(newTaskData.getTitle(), newTaskData.getPriority(), newTaskData.getStatus());
+
+        originalTask.setTitle(newTaskData.getTitle());
+        originalTask.setDescription(newTaskData.getDescription());
+        originalTask.setDueDate(newTaskData.getDueDate());
+        originalTask.setPriority(newTaskData.getPriority());
+        originalTask.setStatus(newTaskData.getStatus());
+        originalTask.setCategory(newTaskData.getCategory());
+
+        repository.update(originalTask);
+    }
+
+    public boolean exists(Integer id) {
+        return repository.findById(id) != null;
+    }
+
+    public Task findById(Integer id) {
+        return repository.findById(id);
     }
 }

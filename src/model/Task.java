@@ -16,14 +16,13 @@ public class Task implements Cloneable{
     private LocalDate dueDate;
     private Category category;
 
-    public Task(int id, String title, int priority, Status status) {
-        this.id = id;
+    public Task(String title, int priority, Status status) {
         this.title = title;
         this.priority = priority;
         this.status = status;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
