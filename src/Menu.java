@@ -240,11 +240,14 @@ public class Menu {
     }
 
     public void handleCreateTask() {
-        Task task = new Task(-1, getTitleInput(), getPriorityInput(), getStatusInput());
-        task.setDescription(getDescriptionInput());
-        task.setCategory(getCategoryInput());
-        task.setDueDate(getDueDateInput());
-        taskService.createTask(task);
+        taskService.createTask(
+                getTitleInput(),
+                getPriorityInput(),
+                getStatusInput(),
+                getDescriptionInput(),
+                getDueDateInput(),
+                getCategoryInput()
+        );
 
         handleReadTasks(1);
     }

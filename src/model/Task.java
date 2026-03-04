@@ -5,12 +5,15 @@ import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class Task implements Cloneable{
+    // gerado ao criar nova tarefa
     private Integer id;
+    // obrigatorios
     private String title;
-    private String description;
-    private LocalDate dueDate;
     private int priority;
     private Status status;
+    // opcionais
+    private String description;
+    private LocalDate dueDate;
     private Category category;
 
     public Task(int id, String title, int priority, Status status) {

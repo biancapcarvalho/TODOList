@@ -4,6 +4,7 @@ import model.Category;
 import model.Status;
 import model.Task;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -14,25 +15,56 @@ public class TaskService {
     List<Task> taskList = new ArrayList<>();
     int lastId = 0;
 
-    public void createTask(Task task) {
+    // criar tarefa somente com os campos obrigatórios (criado a partir do teste)
+    public Task createTask(String title, int priority, Status status) {
+        validadeDataTask(title, priority, status);
+
         int id = generateId();
 
-        Task newTask = new Task(id, task.getTitle(), task.getPriority(), task.getStatus());
+        Task newTask = new Task(id, title, priority, status);
+        taskList.add(newTask);
+        taskList.sort(Comparator.comparing(Task::getPriority));
+        return newTask;
+    }
 
-        if (task.getDescription() != null) {
-            newTask.setDescription(task.getDescription());
+    // criar tarefa com todos os campos (criado a partir do teste)
+    public Task createTask(String title, int priority, Status status, String description, LocalDate dueDate, Category category) {
+        validadeDataTask(title, priority, status);
+
+        int id = generateId();
+
+        Task newTask = new Task(id, title, priority, status);
+
+        if (description != null) {
+            newTask.setDescription(description);
         }
 
-        if (task.getDueDate() != null) {
-            newTask.setDueDate(task.getDueDate());
+        if (dueDate != null) {
+            newTask.setDueDate(dueDate);
         }
 
-        if (task.getCategory() != null) {
-            newTask.setCategory(task.getCategory());
+        if (category != null) {
+            newTask.setCategory(category);
         }
 
         taskList.add(newTask);
         taskList.sort(Comparator.comparing(Task::getPriority));
+
+        return newTask;
+    }
+
+    public void validadeDataTask(String title, int priority, Status status) {
+        if (title == null || title.trim().isEmpty()) {
+            throw new IllegalArgumentException("ERRO: título inválido");
+        }
+
+        if (priority < 1 || priority > 5) {
+            throw new IllegalArgumentException("ERRO: prioridade inválida");
+        }
+
+        if (status == null) {
+            throw new IllegalArgumentException("ERRO: status inválido");
+        }
     }
 
     public Task getTask(int id) {
