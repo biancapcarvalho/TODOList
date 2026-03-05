@@ -25,6 +25,7 @@ public class Task implements Cloneable{
     }
 
     public Task(Integer id, String title, int priority, Status status) {
+        this.id = id;
         this.title = title;
         this.priority = priority;
         this.status = status;

@@ -99,15 +99,15 @@ class TaskServiceSpec extends Specification {
         taskFound.getStatus() == task.getStatus()
     }
 
-    def "deve receber um ID e lançar uma exceção"() {
+    def "deve receber um ID para ler uma tarefa e lançar uma exceção"() {
         when: "chamar o service para ler a tarefa de ID 4"
-        def taskFound = taskService.findById(4)
+        taskService.findById(4)
 
         then: "o service deve ter chamado o findById do repository uma vez"
         1 * taskRepository.findById(4) >> null
 
         and: "deve lançar uma exceção"
-        def exception = thrown(TaskNotFoundException)
+        thrown(TaskNotFoundException)
     }
 
     def "deve retornar uma lista com todas as tarefas"() {
@@ -143,4 +143,84 @@ class TaskServiceSpec extends Specification {
         taskListFound.size() == 0
         taskListFound == taskList
     }
+
+    // TESTES UPDATE ######################################################
+
+    def "deve receber uma tarefa e atualiza-la"() {
+        given: "uma tarefa"
+        Task originalTask = new Task(2, "titulo2", 5, Status.DONE)
+        Task newDataTask = new Task(2, "novo titulo2", 3, Status.DOING)
+
+        when: "chamar o service para atualizar a tarefa"
+        taskService.updateTask(newDataTask)
+
+        then: "o service deve ter chamado o findById do repository uma vez"
+        1 * taskRepository.findById(2) >> originalTask
+
+        and: "o service deve ter chamado o update do repository uma vez"
+        1 * taskRepository.update(originalTask)
+
+        and: "os dados da tarefa foram atualizados"
+        originalTask.getTitle() == newDataTask.getTitle()
+        originalTask.getPriority() == newDataTask.getPriority()
+        originalTask.getStatus() == newDataTask.getStatus()
+        originalTask.getDescription() == newDataTask.getDescription()
+        originalTask.getDueDate() == newDataTask.getDueDate()
+        originalTask.getCategory() == newDataTask.getCategory()
+    }
+
+    def "deve receber uma tarefa para atualizar e lançar uma exceção"() {
+        given: "uma tarefa"
+        Task task = new Task(2, "titulo2", 5, Status.DONE)
+
+        when: "chamar o service para atualizar a tarefa"
+        taskService.updateTask(task)
+
+        then: "o service deve ter chamado o findById do repository uma vez"
+        1 * taskRepository.findById(2) >> null
+
+        and: "o service não deve ter chamado o update do repository"
+        0 * taskRepository.update(_)
+
+        and: "deve lançar uma exceção"
+        thrown(TaskNotFoundException)
+    }
+
+    def "deve receber uma tarefa e lançar uma exceção por campo obrigatório inválido"() {
+        given: "uma tarefa"
+        Task originalTask = new Task(2, "titulo2", 5, Status.DONE)
+        Task newDataTask = new Task(2, title, priority, status)
+
+        when: "chamar o service para atualizar a tarefa"
+        taskService.updateTask(newDataTask)
+
+        then: "o service deve ter chamado o findById do repository uma vez"
+        1 * taskRepository.findById(2) >> originalTask
+
+        and: "uma exceção deve ser retornada"
+        def exception = thrown(IllegalArgumentException)
+
+        and: "mensagem de erro"
+        exception.message == errorMsg
+
+        and: "o service não deve ter chamado o update do repository"
+        0 * taskRepository.update(_)
+
+        and: "os dados da tarefa não foram atualizados"
+        originalTask.getTitle() == "titulo2"
+        originalTask.getPriority() == 5
+        originalTask.getStatus() == Status.DONE
+        originalTask.getDescription() == null
+        originalTask.getDueDate() == null
+        originalTask.getCategory() == null
+
+        where: "cenarios"
+        title    | priority | status        | errorMsg
+        ""       | 1        | Status.TODO   | "ERRO: Título inválido!"
+        null     | 4        | Status.DOING  | "ERRO: Título inválido!"
+        "valido" | 6        | Status.TODO   | "ERRO: Prioridade inválida!"
+        "valido" | 0        | Status.DOING  | "ERRO: Prioridade inválida!"
+        "valido" | 1        | null          | "ERRO: Status inválido!"
+    }
+
 }

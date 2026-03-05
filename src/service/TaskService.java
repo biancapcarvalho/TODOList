@@ -80,7 +80,7 @@ public class TaskService {
         Task originalTask = repository.findById(newTaskData.getId());
 
         if (originalTask == null) {
-            throw new IllegalArgumentException("ERRO: Tarefa de ID " + newTaskData.getId() + " não encontrada");
+            throw new TaskNotFoundException(newTaskData.getId());
         }
 
         validateDataTask(newTaskData.getTitle(), newTaskData.getPriority(), newTaskData.getStatus());
