@@ -1,7 +1,9 @@
 package model;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.LinkedHashMap;
 import java.util.Objects;
 
 public class Task implements Cloneable{
@@ -17,6 +19,12 @@ public class Task implements Cloneable{
     private Category category;
 
     public Task(String title, int priority, Status status) {
+        this.title = title;
+        this.priority = priority;
+        this.status = status;
+    }
+
+    public Task(Integer id, String title, int priority, Status status) {
         this.title = title;
         this.priority = priority;
         this.status = status;

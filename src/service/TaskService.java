@@ -1,5 +1,6 @@
 package service;
 
+import exception.TaskNotFoundException;
 import model.Category;
 import model.Status;
 import model.Task;
@@ -63,7 +64,6 @@ public class TaskService {
         return repository.getAllTasks();
     }
 
-
     public List<Task> getTaskByStatus(Status status) {
         return repository.getTaskByStatus(status);
     }
@@ -100,6 +100,12 @@ public class TaskService {
     }
 
     public Task findById(Integer id) {
-        return repository.findById(id);
+        Task task = repository.findById(id);
+
+        if (task == null) {
+            throw new TaskNotFoundException(id);
+        }
+
+        return task;
     }
 }

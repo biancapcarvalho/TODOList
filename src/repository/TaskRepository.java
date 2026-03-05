@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 public class TaskRepository {
 
-    private List<Task> taskList = new ArrayList<>();
+    private final List<Task> taskList = new ArrayList<>();
     private int lastId = 0;
 
     public void add(Task task) {
