@@ -82,7 +82,7 @@ class TaskServiceSpec extends Specification {
     // TESTES READ ######################################################
 
     def "deve receber um ID e retornar a tarefa correspondente"() {
-        given: "uma lista de tarefas"
+        given: "uma tarefa"
         Task task = new Task(2, "titulo2", 5, Status.DONE)
 
         when: "chamar o service para ler a tarefa de ID 2"
@@ -223,4 +223,33 @@ class TaskServiceSpec extends Specification {
         "valido" | 1        | null          | "ERRO: Status inválido!"
     }
 
+    // TESTES DELETE ######################################################
+
+    def "deve receber um ID e retornar a remover a tarefa correspondente"() {
+        given: "uma tarefa"
+        Task task = new Task(1, "titulo1", 2, Status.TODO)
+
+        when: "chamar o service para remover a tarefa de ID 1"
+        taskService.deleteTask(1)
+
+        then: "deve ter executado o findById do repository uma vez"
+        1 * taskRepository.findById(1) >> task
+
+        and: "deve ter executado o remove do repository uma vez"
+        1 * taskRepository.remove(task)
+    }
+
+    def "deve receber um ID para remover uma tarefa e lançar uma exceção"() {
+        when: "chamar o service para remover a tarefa de ID 4"
+        taskService.deleteTask(4)
+
+        then: "o service deve ter chamado o findById do repository uma vez"
+        1 * taskRepository.findById(4) >> null
+
+        and: "o service não deve ter chamado o remove do repository"
+        0 * taskRepository.remove(_)
+
+        and: "deve lançar uma exceção"
+        thrown(TaskNotFoundException)
+    }
 }

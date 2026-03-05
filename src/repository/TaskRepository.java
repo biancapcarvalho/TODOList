@@ -56,14 +56,12 @@ public class TaskRepository {
     }
 
 
-    public void remove(Integer taskId) {
-        Task task = findById(taskId);
+    public void remove(Task task) {
         taskList.remove(task);
     }
 
     public void update(Task task) {
-        Integer taskId = task.getId();
-        remove(taskId);
+        remove(task);
         add(task);
     }
 

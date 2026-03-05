@@ -53,7 +53,13 @@ public class TaskService {
     }
 
     public void deleteTask(int taskId) {
-        repository.remove(taskId);
+        Task task = repository.findById(taskId);
+
+        if (task == null) {
+            throw new TaskNotFoundException(taskId);
+        }
+
+        repository.remove(task);
     }
 
     public boolean isEmptyList() {
