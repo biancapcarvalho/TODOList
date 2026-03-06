@@ -1,5 +1,6 @@
 package repository;
 
+import exception.TaskNotFoundException;
 import model.Category;
 import model.Status;
 import model.Task;
@@ -61,8 +62,14 @@ public class TaskRepository {
     }
 
     public void update(Task task) {
-        remove(task);
-        add(task);
+        int index = taskList.indexOf(task);
+
+        if (index != -1) {
+            taskList.set(index, task);
+            taskList.sort(Comparator.comparing(Task::getPriority));
+        } else {
+            throw new TaskNotFoundException(task.getId());
+        }
     }
 
     private int generateId() {
