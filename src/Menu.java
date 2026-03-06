@@ -1,6 +1,7 @@
 import model.Category;
 import model.Status;
 import model.Task;
+import repository.TaskRepository;
 import service.TaskService;
 
 import java.time.LocalDate;
@@ -11,12 +12,12 @@ import java.util.Scanner;
 
 public class Menu {
     Scanner scanner = new Scanner(System.in);
-    TaskService taskService = new TaskService();
+    TaskService taskService = new TaskService(new TaskRepository());
 
     public void showMenu() {
         int option = 0;
 
-        do {
+        while (option != 5) {
             boolean invalidOption = true;
 
             while (invalidOption) {
@@ -42,7 +43,7 @@ public class Menu {
 
             switch (option) {
                 case 1:
-                    handleReadTasks(0);
+                    handleReadTasks();
                     break;
                 case 2:
                     handleCreateTask();
@@ -59,16 +60,14 @@ public class Menu {
                 default:
                     // já tratei os demais casos no try-catch
             }
-        } while (option != 5);
+        }
     }
 
-    public void handleReadTasks(int orderBy) {
+    public void handleReadTasks() {
         if (taskService.isEmptyList()) {
             System.out.println("\n   -- Você não tem tarefas cadastradas.");
-        } else if (orderBy == 0) {
-            filterMenu();
         } else {
-            showTasks(taskService.getAllTasks());
+            filterMenu();
         }
     }
 
@@ -240,13 +239,16 @@ public class Menu {
     }
 
     public void handleCreateTask() {
-        Task task = new Task(-1, getTitleInput(), getPriorityInput(), getStatusInput());
-        task.setDescription(getDescriptionInput());
-        task.setCategory(getCategoryInput());
-        task.setDueDate(getDueDateInput());
-        taskService.createTask(task);
+        taskService.createTask(
+                getTitleInput(),
+                getPriorityInput(),
+                getStatusInput(),
+                getDescriptionInput(),
+                getDueDateInput(),
+                getCategoryInput()
+        );
 
-        handleReadTasks(1);
+        // todo - metodo para exibir somente a tarefa criada
     }
 
     public void handleUpdateTask() {
@@ -255,18 +257,16 @@ public class Menu {
         } else {
             int id = getIdInput();
 
-            if (taskService.findIfExists(id)) {
-                Task originalTask = taskService.getTask(id);
+            if (taskService.exists(id)) {
+                Task originalTask = taskService.findById(id);
                 Task taskClone = originalTask.clone();
                 int option = 0;
 
-                do {
+                while(option != 7 && option != 8) {
                     boolean invalidOption = true;
-
+                    System.out.println("\n############ ATUALIZAR TAREFA ############");
                     while (invalidOption) {
-                        System.out.println("\n############ ATUALIZAR TAREFA ############");
-
-                        System.out.println("\nOrientações para edição:\n - para manter o valor atual do atributo tecle Enter,\n - para alterar digite o novo valor,\n para remover insira '-' e tecle Enter [válido para campos opcionais]\n");
+                        System.out.println("\nOrientações para edição:\n - para manter o valor atual do atributo tecle Enter,\n - para alterar digite o novo valor,\n - para remover insira '-' e tecle Enter [válido para campos opcionais]\n");
                         System.out.println("Dados atuais da tarefa: " + taskClone);
 
                         System.out.println("\nInforme qual campo você deseja alterar\n");
@@ -326,7 +326,7 @@ public class Menu {
                             // sair sem salvar
                             break;
                     }
-                } while (option != 7 && option != 8);
+                }
 
             } else {
                 System.out.println("   -- ATENÇÃO: ID inválido.");
@@ -343,12 +343,12 @@ public class Menu {
 
             taskService.deleteTask(getIdInput());
 
-            handleReadTasks(1);
+            // todo - método para exibir confirmação de remoção da tarefa
         }
     }
 
     private int getIdInput() {
-        handleReadTasks(1);
+        showTasks(taskService.getAllTasks());
 
         int taskId = 0;
         boolean invalidId = true;
@@ -359,7 +359,7 @@ public class Menu {
             try {
                 taskId = Integer.parseInt(scanner.nextLine());
 
-                if (taskService.findIfExists(taskId)) {
+                if (taskService.exists(taskId)) {
                     invalidId = false;
                 } else {
                     System.out.println("   -- ATENÇÃO: ID inválido. Você deve inserir o número do ID correspondente a tarefa.");

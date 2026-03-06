@@ -42,12 +42,15 @@ O projeto foi desenvolvido em Java puro, sem uso de qualquer framework, e, na ve
 ## Mais informações
 
 - Java JDK 17.0.18
+- Spock 2.4 (Groovy 5.0)
 - Segue o padrão Git Flow para organização do desenvolvimento do projeto
-- Estrutura do projeto:
+- Estrutura do projeto (`src`):
   - Package `Model`: destinado a definição das entidades, como Task e Status
-  - Package `Service`: destinado a lógica de manipulação das tarefas e lista de tarefas
+  - Package `Service`: destinado a lógica de manipulação das tarefas, tratamento de dados
+  - Package `Repository`: destinado a manipulação da lista de tarefas
   - `View/Menu`: destinado a interação com o usuário
   - `Main`: ponto de entrada da aplicação
+- Implementados testes para TaskService e TaskRepository
 
 ## Como executar
 

@@ -1,103 +1,117 @@
 package service;
 
+import exception.TaskNotFoundException;
 import model.Category;
 import model.Status;
 import model.Task;
+import repository.TaskRepository;
 
-import java.util.ArrayList;
-import java.util.Comparator;
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class TaskService {
-    List<Task> taskList = new ArrayList<>();
-    int lastId = 0;
+    private final TaskRepository repository;
 
-    public void createTask(Task task) {
-        int id = generateId();
+    public TaskService(TaskRepository repository) {
+        this.repository = repository;
+    }
 
-        Task newTask = new Task(id, task.getTitle(), task.getPriority(), task.getStatus());
+    public Task createTask(String title, int priority, Status status, String description, LocalDate dueDate, Category category) {
+        validateDataTask(title, priority, status);
 
-        if (task.getDescription() != null) {
-            newTask.setDescription(task.getDescription());
+        Task newTask = new Task(title, priority, status);
+
+        if (description != null) {
+            newTask.setDescription(description);
         }
 
-        if (task.getDueDate() != null) {
-            newTask.setDueDate(task.getDueDate());
+        if (dueDate != null) {
+            newTask.setDueDate(dueDate);
         }
 
-        if (task.getCategory() != null) {
-            newTask.setCategory(task.getCategory());
+        if (category != null) {
+            newTask.setCategory(category);
         }
 
-        taskList.add(newTask);
-        taskList.sort(Comparator.comparing(Task::getPriority));
+        repository.add(newTask);
+
+        return newTask;
     }
 
-    public Task getTask(int id) {
-        return taskList.stream()
-                .filter(task -> task.getId() == id)
-                .findFirst()
-                .orElse(null);
-    }
-
-    public List<Task> getAllTasks() {
-        return taskList;
-    }
-
-    public List<Task> getTaskByStatus(Status status) {
-        return taskList.stream()
-                .filter(task -> task.getStatus().equals(status))
-                .collect(Collectors.toList());
-    }
-
-    public List<Task> getTaskByPriority(int a, int b) {
-        return taskList.stream()
-                .filter(task -> task.getPriority() >= a && task.getPriority() <= b) // b >= p >= a
-                .collect(Collectors.toList());
-    }
-
-    public List<Task> getTaskByCategory(Category category) {
-        return taskList.stream()
-                .filter(task -> Objects.equals(task.getCategory(), category))
-                .collect(Collectors.toList());
-    }
-
-    public boolean findIfExists(int id) {
-        for (Task task : taskList) {
-            int taskId = task.getId();
-            if (taskId == id) {
-                return true;
-            }
+    public void validateDataTask(String title, int priority, Status status) {
+        if (title == null || title.trim().isEmpty()) {
+            throw new IllegalArgumentException("ERRO: Título inválido!");
         }
 
-        return false;
+        if (priority < 1 || priority > 5) {
+            throw new IllegalArgumentException("ERRO: Prioridade inválida!");
+        }
+
+        if (status == null) {
+            throw new IllegalArgumentException("ERRO: Status inválido!");
+        }
     }
 
     public void deleteTask(int taskId) {
-        Task task = getTask(taskId);
-        taskList.remove(task);
-    }
+        Task task = repository.findById(taskId);
 
-    public void updateTask(Task task) {
-        Task taskToUpdate = getTask(task.getId());
-        taskToUpdate.setTitle(task.getTitle());
-        taskToUpdate.setDescription(task.getDescription());
-        taskToUpdate.setDueDate(task.getDueDate());
-        taskToUpdate.setPriority(task.getPriority());
-        taskToUpdate.setStatus(task.getStatus());
-        taskToUpdate.setCategory(task.getCategory());
-        taskList.sort(Comparator.comparing(Task::getPriority));
-    }
+        if (task == null) {
+            throw new TaskNotFoundException(taskId);
+        }
 
-    private int generateId() {
-        int id = lastId + 1;
-        lastId = id;
-        return id;
+        repository.remove(task);
     }
 
     public boolean isEmptyList() {
-        return taskList.isEmpty();
+        return repository.isEmpty();
+    }
+
+    public List<Task> getAllTasks() {
+        return repository.getAllTasks();
+    }
+
+    public List<Task> getTaskByStatus(Status status) {
+        return repository.getTaskByStatus(status);
+    }
+
+    public List<Task> getTaskByPriority(int priorityMin, int priorityMax) {
+        return repository.getTaskByPriority(priorityMin, priorityMax);
+    }
+
+    public List<Task> getTaskByCategory(Category category) {
+        return repository.getTaskByCategory(category);
+    }
+
+    public void updateTask(Task newTaskData) {
+        Task originalTask = repository.findById(newTaskData.getId());
+
+        if (originalTask == null) {
+            throw new TaskNotFoundException(newTaskData.getId());
+        }
+
+        validateDataTask(newTaskData.getTitle(), newTaskData.getPriority(), newTaskData.getStatus());
+
+        originalTask.setTitle(newTaskData.getTitle());
+        originalTask.setDescription(newTaskData.getDescription());
+        originalTask.setDueDate(newTaskData.getDueDate());
+        originalTask.setPriority(newTaskData.getPriority());
+        originalTask.setStatus(newTaskData.getStatus());
+        originalTask.setCategory(newTaskData.getCategory());
+
+        repository.update(originalTask);
+    }
+
+    public boolean exists(Integer id) {
+        return repository.findById(id) != null;
+    }
+
+    public Task findById(Integer id) {
+        Task task = repository.findById(id);
+
+        if (task == null) {
+            throw new TaskNotFoundException(id);
+        }
+
+        return task;
     }
 }
