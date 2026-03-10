@@ -14,7 +14,7 @@ body {
     padding: 15px 10px;
 
     h2, p {
-        margin: 0px;
+        margin: 0;
         color: rgb(160, 160, 160);
     }
 }
@@ -28,7 +28,7 @@ body {
 
     h2 {
         color: rgb(100, 100, 100);
-        margin: 0px;
+        margin: 0;
         /* ver uma fonte melhor, queria mais fino e mais comprido/alto/esticado */
     }
 }
@@ -58,7 +58,7 @@ body {
         flex-wrap: wrap;
 
         p {
-            margin: 0px;
+            margin: 0;
             font-size: 16px;
         }
 
@@ -76,7 +76,7 @@ body {
     width: 270px;
     background-color: rgb(250, 250, 250);
     border-radius: 10px;
-    margin: 15px 0px 10px 0px;
+    margin: 15px 0 10px 0;
     padding: 10px 10px 15px 5px;
 
     .header-task {
@@ -86,22 +86,27 @@ body {
         flex-wrap: wrap;
 
         p {
-            margin: 0px 0px 5px 0px;
-            padding: 10px 5px 0px 10px;
+            margin: 0 0 5px 0;
+            padding: 10px 5px 0 10px;
             font-size: 20px;
             color: rgb(50, 50, 50);
         }
 
         i {
-            margin: 0px 0px 5px 0px;
-            padding: 10px 5px 0px 10px;
+            margin: 0 0 5px 0;
+            padding: 10px 5px 0 10px;
             font-size: 15px;
             color: rgb(126, 126, 126);
+
+            &:hover {
+                cursor: pointer;
+                color: #333333;
+            }
         }
 
         i.fa-trash {
-            padding-left: 0px;
-            padding-right: 0px;
+            padding-left: 0;
+            padding-right: 0;
         }
     }
 
@@ -121,7 +126,7 @@ body {
         }
 
         p {
-            margin: 0px;
+            margin: 0;
             color: rgb(50, 50, 50);
             font-size: 13px;
             padding-left: 5px;
@@ -132,20 +137,20 @@ body {
             background-color: rgba(200, 200, 200, 0.5);
             border-radius: 3px;
             width: fit-content;
-            margin: 0;
-        }
-
-        .due-date {
-            margin-left: 10px;
-            margin-right: 10px;
+            margin: 0 10px;
         }
 
         .priority {
-            margin: 0px;
+            margin: 0;
         }
     }
 }
 
 p {
     margin: auto;
+}
+
+.fa-plus:hover {
+    cursor: pointer;
+    color: #333333;
 }

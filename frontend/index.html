@@ -1,30 +1,131 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="style.css">
-    <!-- para usar icones -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <title>TODO List</title>
-</head>
-<body>
-    <div id="main-div">
-        <div id="header-div">
-            <h2>TODO List</h2>
-            <p>por Bianca Carvalho</p>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- icones do font awesome -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <!-- Bootstrap CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+        <link rel="stylesheet" href="style.css">
+        <title>TODO List</title>
+    </head>
+    <body>
+        <div id="main-div">
+            <div id="header-div">
+                <h2>TODO List</h2>
+                <p>por Bianca Carvalho</p>
+            </div>
+
+            <div id="tasks-div">
+                <div>
+                    <h2>Tarefas</h2>
+                </div>
+                <div id="task-list-div">
+                    <div class="status-column">
+                        <div class="column-title">
+                            <p>A FAZER</p>
+                            <i id="create-todo-task" class="fa-regular fa-plus"></i>
+                        </div>
+                        <div id="todo-column"></div>
+                    </div>
+                    <div class="status-column">
+                        <div class="column-title">
+                            <p>EM PROGRESSO</p>
+                            <i id="create-doing-task" class="fa-regular fa-plus"></i>
+                        </div>
+                        <div id="doing-column"></div>
+                    </div>
+                    <div class="status-column">
+                        <div class="column-title">
+                            <p>CONCLUÍDO</p>
+                            <i id="create-done-task" class="fa-regular fa-plus"></i>
+                        </div>
+                        <div id="done-column"></div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div id="tasks-div">
-            <div>
-                <h2>
-                    Tarefas
-                </h2>
-            </div>
-            <div id="task-list-div">
+        <div class="modal fade" id="taskModal" tabindex="-1" aria-labelledby="modal-title" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modal-title">Tarefa</h5>
+                        <button type="button" class="btn-close close-btn" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="form-task" class="needs-validation" novalidate>
+                            <div class="mb-3">
+                                <label for="title-input" class="form-label">Título</label>
+                                <input type="text" class="form-control" id="title-input" placeholder="Digite o título..." required>
+                                <div class="invalid-feedback">Informe um título!</div>
+                            </div>
 
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="status-input" class="form-label">Status</label>
+                                    <select class="form-select" id="status-input" required>
+                                        <option value="" selected disabled>Selecione um status...</option>
+                                        <option value="todo">A fazer</option>
+                                        <option value="doing">Em progresso</option>
+                                        <option value="done">Concluído</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Prioridade</label>
+                                    <input type="hidden" id="priority-input" required>
+
+                                    <div class="dropdown">
+                                        <button class="btn border form-select text-start d-flex justify-content-between align-items-center" type="button" id="priorityDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: #fff;">
+                                            <span id="priority-selected-text" class="text-secondary">Selecione uma prioridade...</span>
+                                        </button>
+
+                                        <ul class="dropdown-menu w-100" aria-labelledby="priorityDropdownBtn">
+                                            <li><a class="dropdown-item" href="#" data-value="1"><i class="fa-solid fa-angles-down me-2" style="color: dodgerblue; width: 20px; text-align: center;"></i>Muito baixa</a></li>
+                                            <li><a class="dropdown-item" href="#" data-value="2"><i class="fa-solid fa-angle-down me-2" style="color: dodgerblue; width: 20px; text-align: center;"></i>Baixa</a></li>
+                                            <li><a class="dropdown-item" href="#" data-value="3"><i class="fa-solid fa-equals me-2" style="color: darkorange; width: 20px; text-align: center;"></i>Normal</a></li>
+                                            <li><a class="dropdown-item" href="#" data-value="4"><i class="fa-solid fa-angle-up me-2" style="color: darkred; width: 20px; text-align: center;"></i>Alta</a></li>
+                                            <li><a class="dropdown-item" href="#" data-value="5"><i class="fa-solid fa-angles-up me-2" style="color: darkred; width: 20px; text-align: center;"></i>Muito alta</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="dueDate-input" class="form-label">Prazo</label>
+                                    <input type="date" class="form-control" id="dueDate-input" name="dueDate">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="category-input" class="form-label">Categoria</label>
+                                    <select class="form-select" id="category-input" name="category">
+                                        <option value="">Selecione uma categoria...</option>
+                                        <option value="casa">Casa</option>
+                                        <option value="trabalho">Trabalho</option>
+                                        <option value="faculdade">Faculdade</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="description-input" class="form-label">Descrição</label>
+                                <textarea class="form-control" id="description-input" rows="3" placeholder="Digite a descrição..."></textarea>
+                            </div>
+
+                            <div class="modal-footer px-0 pb-0 border-top-0">
+                                <button type="reset" class="btn btn-secondary btn-cancel">Cancelar</button>
+                                <button type="submit" class="btn btn-success btn-create">Criar</button>
+                                <button type="submit" class="btn btn-success btn-update" style="display: none;">Atualizar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-    <script src="script.js"></script>
-</body>
+
+        <script src="script.js"></script>
+        <!-- Bootstrap JS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    </body>
 </html>
