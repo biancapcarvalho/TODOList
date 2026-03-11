@@ -3,11 +3,11 @@
 * =========================================
 * */
 
-let taskUpdatingId = 0; // recebe o id da task que está sendo atualizada
-let lastId = 10; // variável para setar o id (atribuição do backend, usada aqui para simular)
-let taskList = []; // simular saída do getAllTasks() do backend
+let taskUpdatingId = 0;
+let lastId = 0;
+let taskList = [];
 
-let status = {todo: "A FAZER", doing: "EM PROGRESSO", done: "CONCLUÍDO"}; // mapa de status
+let status = ['todo', 'doing', 'done'];
 let priorityIconStyle = [
     { value: 1, class: "fa-solid fa-angles-down", color: "dodgerblue" },
     { value: 2, class: "fa-solid fa-angle-down", color: "dodgerblue" },
@@ -26,10 +26,13 @@ let taskModal;
 
 document.addEventListener("DOMContentLoaded", function() {
     taskModal = new bootstrap.Modal(document.getElementById('taskModal'));
+
+    taskList.sort((taskA, taskB) => taskB.priority - taskA.priority);
+    renderTaskList();
 });
 
 // -> função para criar card de tarefa
-function createTaskCard(task)  {
+function createTaskCard(task, newTask = false)  {
     let priorityStyle = priorityIconStyle.find(el => el.value === task.priority);
     let dueDateTag = `
         <p class="due-date">
@@ -37,22 +40,24 @@ function createTaskCard(task)  {
             ${task.dueDate ? task.dueDate.toLocaleDateString() : ""}
         </p>
     `;
-    let categoryTag = `<p class="category">${task.category}</p>`
+    let categoryTag = `<p class="category">${task.category}</p>`;
+    let descriptionIcon = `<i class="fa-solid fa-align-left"></i>`;
     return `
-        <div id="task-card-${task.id}" class="task-mini-card">
+        <div id="task-card-${task.id}" class="task-mini-card ${newTask ? 'highlight-card' : ''}">
             <div class="header-task">
                 <p>${task.title}</p>
                 <div>
-                    <i id="update-task" class="fa-regular fa-pen-to-square" onclick="updateTask(${task.id})"></i>
-                    <i id="delete-task" class="fa-solid fa-trash" onclick="deleteTask(${task.id})"></i>
+                    <i id="update-task" class="fa-solid fa-expand" onclick="updateTask(${task.id})" title="Ver tarefa"></i>
+                    <i id="delete-task" class="fa-solid fa-trash" onclick="deleteTask(${task.id})" title="Remover tarefa"></i>
                 </div>
             </div>
             <div class="footer-task">
                 <div>
+                    ${task.description ? descriptionIcon : ""}
                     ${task.dueDate ? dueDateTag : ""}
                     ${task.category ? categoryTag : ""}
                 </div>
-                <p class="priority-${task.priority}">
+                <p class="priority priority-${task.priority}">
                     <i class="${priorityStyle.class}" style="color: ${priorityStyle.color}"></i>
                 </p>
             </div>
@@ -61,19 +66,39 @@ function createTaskCard(task)  {
 }
 
 // -> função para adicionar novo card de tarefa na respectiva coluna
-function addTaskCardToColumn(task) {
+function addTaskCardToColumn(task, newTask = false) {
     document.getElementById(`${task.status}-column`).innerHTML += createTaskCard({
         id: task.id,
         title: task.title,
         dueDate: task.dueDate,
         priority: task.priority,
-        category: task.category
-    });
+        category: task.category,
+        description: task.description
+    }, newTask);
 }
 
 // -> função para remover card de tarefa
 function removeTaskCard(id) {
     document.getElementById(`task-card-${id}`).remove();
+}
+
+// funcao para percorrer lista e renderizar os cards
+function renderTaskList(newTaskId = null) {
+    document.getElementById(`todo-column`).innerHTML = "";
+    document.getElementById(`doing-column`).innerHTML = "";
+    document.getElementById(`done-column`).innerHTML = "";
+    taskList?.forEach(task => {
+        (task.id === newTaskId) ? addTaskCardToColumn(task, true) : addTaskCardToColumn(task);
+    })
+
+    if (newTaskId) {
+        setTimeout(() => {
+            let newCard = document.getElementById(`task-card-${newTaskId}`);
+            if (newCard) {
+                newCard.classList.remove('highlight-card');
+            }
+        }, 1000);
+    }
 }
 
 /*
@@ -93,6 +118,33 @@ function getInputData() {
     }
 }
 
+// -> função para validar o form
+function validateForm() {
+    let isValid = true;
+    let form = document.getElementById("form-task");
+
+    form.querySelectorAll('.form-control, .form-select').forEach(input => {
+        if (!input.checkValidity()) {
+            input.classList.add('is-invalid');
+            isValid = false;
+        } else {
+            input.classList.remove('is-invalid');
+        }
+    });
+
+    let priorityInput = document.getElementById("priority-input").value;
+    let priorityBtn = document.getElementById("priorityDropdownBtn");
+
+    if (!priorityInput) {
+        priorityBtn.classList.add("is-invalid");
+        isValid = false;
+    } else {
+        priorityBtn.classList.remove("is-invalid");
+    }
+
+    return isValid;
+}
+
 // -> função para resetar os dados do form (limpa tudo)
 function clearInputData() {
     document.getElementById("title-input").value = "";
@@ -106,14 +158,19 @@ function clearInputData() {
     let spanBtn = document.getElementById('priority-selected-text');
     spanBtn.innerHTML = "Selecione uma prioridade...";
     spanBtn.classList.add('text-secondary');
+
+    document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
 }
 
 // -> seta valores nos campos do form (usado para atualização de tarefa)
 function setInputData(task) {
-    let year = task.dueDate.getFullYear();
-    let month = String(task.dueDate.getMonth() + 1).padStart(2, '0');
-    let day = String(task.dueDate.getDate()).padStart(2, '0');
-    let formattedDate = `${year}-${month}-${day}`;
+    let formattedDate = "";
+    if (task.dueDate) {
+        let year = task.dueDate.getFullYear();
+        let month = String(task.dueDate.getMonth() + 1).padStart(2, '0');
+        let day = String(task.dueDate.getDate()).padStart(2, '0');
+        formattedDate = `${year}-${month}-${day}`;
+    }
 
     document.getElementById("title-input").value = task.title;
     document.getElementById("status-input").value = task.status;
@@ -149,14 +206,11 @@ document.querySelector("#taskModal .btn-cancel").onclick = function () {
 
 // -> criar tarefa (botão criar)
 document.querySelector("#taskModal .btn-create").onclick = function (event) {
-    let form = document.getElementById("form-task");
+    event.preventDefault();
 
-    if (!form.checkValidity()) {
-        form.reportValidity();
+    if (!validateForm()) {
         return;
     }
-
-    event.preventDefault();
 
     taskModal.hide();
 
@@ -165,25 +219,24 @@ document.querySelector("#taskModal .btn-create").onclick = function (event) {
     lastId += 1;
 
     taskList.push(newTask);
-    addTaskCardToColumn(newTask);
+    taskList.sort((taskA, taskB) => taskB.priority - taskA.priority );
+    renderTaskList(newTask.id);
     clearInputData();
 }
 
 // -> editar tarefa (botão atualizar)
 document.querySelector("#taskModal .btn-update").onclick = function (event) {
-    let form = document.getElementById("form-task");
-    if (!form.checkValidity()) {
-        form.reportValidity();
+    event.preventDefault();
+
+    if (!validateForm()) {
         return;
     }
-
-    event.preventDefault();
 
     taskModal.hide();
 
     let newData = getInputData();
 
-    taskList.map((task) => {
+    taskList.forEach((task) => {
         if(task.id === taskUpdatingId) {
             task.title = newData.title;
             task.status = newData.status;
@@ -194,10 +247,8 @@ document.querySelector("#taskModal .btn-update").onclick = function (event) {
         }
     })
 
-    let updatedTask = taskList.find(t => t.id === taskUpdatingId);
-
-    removeTaskCard(taskUpdatingId);
-    addTaskCardToColumn(updatedTask)
+    taskList.sort((taskA, taskB) => taskB.priority - taskA.priority );
+    renderTaskList(taskUpdatingId);
     clearInputData();
 }
 
@@ -207,15 +258,14 @@ document.querySelector("#taskModal .btn-update").onclick = function (event) {
 * */
 
 // -> criar tarefa
-for (const key of Object.keys(status)) {
-    document.getElementById(`create-${key}-task`).onclick = function () {
+for (const st of status) {
+    document.getElementById(`create-${st}-task`).onclick = function () {
         taskUpdatingId = 0;
-        document.getElementById("status-input").value = key;
-        $('#status-input').trigger('change');
+        document.getElementById("status-input").value = st;
 
         document.getElementById("modal-title").innerHTML = "Criar Nova Tarefa";
 
-        document.querySelector(".btn-create").style.display = "git logblock";
+        document.querySelector(".btn-create").style.display = "block";
         document.querySelector(".btn-update").style.display = "none";
 
         taskModal.show();
@@ -229,7 +279,7 @@ function deleteTask(id) {
         taskList.splice(index,1);
         removeTaskCard(id);
     } else {
-        console.log("index nao encontrado");
+        alert("Erro ao remover tarefa!");
     }
 }
 
@@ -252,10 +302,11 @@ function updateTask(id) {
         });
         taskModal.show();
     } else {
-        console.log("tarefa nao encontrada");
+        alert("Não é possível atualizar essa tarefa!");
     }
 }
 
+// -> funcionamento do dropdown que substitui o select de prioridade
 document.querySelectorAll('.dropdown-menu .dropdown-item').forEach(item => {
     item.addEventListener('click', function(e) {
         e.preventDefault();
@@ -263,12 +314,12 @@ document.querySelectorAll('.dropdown-menu .dropdown-item').forEach(item => {
         let selectedValue = this.getAttribute('data-value');
         let selectedHTML = this.innerHTML;
 
-        // Atualiza o input escondido com o número (1, 2, etc)
         document.getElementById('priority-input').value = selectedValue;
 
-        // Atualiza o visual do botão (tira a cor cinza do placeholder e coloca o ícone+texto)
         let spanBtn = document.getElementById('priority-selected-text');
         spanBtn.innerHTML = selectedHTML;
         spanBtn.classList.remove('text-secondary');
+        document.getElementById('priorityDropdownBtn').classList.remove('is-invalid');
     });
 });
+

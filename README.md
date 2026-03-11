@@ -7,64 +7,77 @@ _**Desenvolvido por Bianca Carvalho**_
 
 ## Sobre o projeto
 
-O projeto foi desenvolvido em Java puro, sem uso de qualquer framework, e, na versão atual, roda via terminal (feito somente o backend)
+O projeto é uma aplicação TODO List que atualmente está dividida em Frontend e Backend, que por enquanto não se comunicam.
+
+O backend opera via terminal e gerencia a lógica de negócios e estruturação dos dados em Java puro.
+
+O frontend apresenta uma interface gráfica intuitiva e responsiva em estilo Kanban, simulando as operações de CRUD através do JavaScript no navegador, sem comunicação real com o backend ou persistência de dados.
+
+---
+
+## Tecnologias utilizadas
+
+### Frontend
+- HTML5, CSS3 e JavaScript
+- Bootstrap 5.3.8
+- FontAwesome
+
+### Backend
+- Java JDK 17.0.18 - Sem uso de frameworks
+- Spock 2.4 (Groovy 5.0) - Para testes unitários
+
+---
 
 ## Funcionalidades
 
-- **Menu**: Menu com as opções de ver, criar e excluir tarefas.
+### Frontend
+- **Quadro Kanban:** Visualização das tarefas divididas em colunas por status: A Fazer (TODO), Em Progresso (DOING) e Concluído (DONE).
+- **Gestão de Tarefas (Simulada):** Permite Criar (C), Ler (R), Atualizar (U) e Deletar (D) tarefas usando JavaScript.
+- **Ordenação Automática:** As tarefas são exibidas respeitando a ordem de prioridade (1 a 5).
 
+Obs.: A gestão de tarefas está sendo feita pelo frontend para simular o comportamento do backend enquanto não há integração entre os dois.
 
+### Backend
+- **Menu**: Menu com as opções de ver, criar, atualizar e excluir tarefas.
 - **Criar Tarefa**: Permite cadastrar tarefas com:
-  - Título*
-  - Descrição
-  - Data de Término
-  - Prioridade (1 a 5)*
-  - Categoria (Casa, Faculdade, Trabalho)
-  - Status (Todo, Doing, Done)*
-
-
+  - Título*, Descrição, Data de Término, Prioridade (1 a 5)*, Categoria (Casa, Faculdade, Trabalho), e Status (Todo, Doing, Done)*
 - **Balanceamento**: Novas tarefas são adicionadas a lista respeitando a ordenação por prioridade
-
-
 - **Visualizar lista de tarefas**:
   - Tem opções para visualizar a lista filtrada por Status, Categoria e Prioridade
   - A lista é ordenada por prioridade
-
-
 - **Atualizar tarefa**: Permite a edição de tarefas (utiliza ID e shallow copy)
-
-
 - **Remover Tarefa**: Permite a exclusão de tarefas (utiliza ID)
-
-
 - **Validação de Dados**: Tratamento de exceções para entradas inválidas (fora do TaskService, que é responsável somente pela lógica de manipulação das tarefas), e uso de números para facilitar a identificação e seleção de uma opção pelo usuário
 
-## Mais informações
+----
 
-- Java JDK 17.0.18
-- Spock 2.4 (Groovy 5.0)
-- Segue o padrão Git Flow para organização do desenvolvimento do projeto
-- Estrutura do projeto (`src`):
-  - Package `Model`: destinado a definição das entidades, como Task e Status
-  - Package `Service`: destinado a lógica de manipulação das tarefas, tratamento de dados
-  - Package `Repository`: destinado a manipulação da lista de tarefas
-  - `View/Menu`: destinado a interação com o usuário
-  - `Main`: ponto de entrada da aplicação
-- Implementados testes para TaskService e TaskRepository
+## Estrutura do projeto
+
+- `/Frontend`: Contém os arquivos de interface (`index.html`, `style.css`, `script.js`).
+- `/src`: Contém todo o código-fonte do Backend Java.
+  - `Model/`: Entidades como Task e Status.
+  - `Service/`: Lógica de manipulação e tratamento de dados.
+  - `Repository/`: Manipulação da lista de tarefas.
+  - `View/Menu`: Interação com o usuário no terminal.
+  - `Main`: Ponto de entrada da aplicação.
+- `/test`: testes unitários para TaskService e TaskRepository
+
+---
 
 ## Como executar
-
-O projeto foi desenvolvido utilizando o Java JDK 17.0.18 na IDE IntelliJ.
 
 Antes tudo é necessário clonar o repositório git:
 ```bash
 git clone https://github.com/biancapcarvalho/TODOList.git
 ```
 
-### Executar via IntelliJ
+#### Executar o frontend
+Para executar o frontend você deve abrir o arquivo `index.html` em um navegador.
+
+### Executar o backend via IntelliJ
 Inicie/abra o projeto no IntelliJ, vá no arquivo src/Main.java e execute o programa (shift+f10)
 
-### Executar via terminal
+### Executar o backend via terminal
 Vá até o diretório `src` dentro do repositório clonado
 ```bash
 cd TODOList/src
@@ -84,12 +97,3 @@ Após isso será exibido no terminal o menu principal daa aplicação, como most
 
 ![Execução da aplicação via termminal](terminal.png)
 
----
-
-## TODO (planos para o futuro)
-
-- Exibir contagem de tarefas (total, por categoria, status e prioridade)
-- Filtrar as tarefas por data de término
-- Persistir os dados (csv, json, ect)
-
-E em futuro mais distante mas não tão distante, utilizar banco de dados (postgre) e implementar frontend
